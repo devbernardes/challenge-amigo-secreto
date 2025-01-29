@@ -81,53 +81,38 @@ body {
 
 .input-name {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #000;
+    padding: 12px 15px;
+    border: 2px solid var(--color-tertiary);
     border-radius: 25px 0 0 25px;
     font-size: 16px;
+    max-width: 500px;
 }
 
-.button-container {
-    width: 300px;
-    justify-content: center;
+.input-name:focus {
+    border-color:var(--color-primary);
+    outline: none;
 }
 
-/* Estilos de entrada de texto */
-.input-title {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #333;
-    border-right: none;
-    border-radius: 25px 0 0 25px;
-    font-family: "Merriweather", serif;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Estilos de botão */
-button {
-    padding: 15px 30px;
-    font-family: "Inter", sans-serif;
-    font-size: 16px;
-    border: 2px solid #000;
-    border-radius: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-}
-
+/* Melhorando o botão de adicionar */
 .button-add {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-family: "Inter", sans-serif;
+    border: 2px solid #000;
+    border-radius: 0 25px 25px 0;
     background-color: var(--color-tertiary);
     color: var(--color-text);
-    border-radius: 0 25px 25px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.button-add:hover {
+button-add:hover {
     background-color: #a1a1a1;
 }
 
-/* Listas */
+/* Estilos de Listas */
 ul {
-    list-style-type: none;
+    list-style: none;
     color: var(--color-text);
     font-family: "Inter", sans-serif;
     font-size: 18px;
@@ -151,12 +136,24 @@ ul {
     color: var(--color-white);
     background-color: var(--color-button);
     font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 25px;
 }
 
 .button-draw img {
-    margin-right: 40px;
+    margin-right: 20px;
 }
 
 .button-draw:hover {
     background-color: var(--color-button-hover);
+}
+
+/* Estilo do rodapé com "Desenvolvido por Gabriel" */
+.footer {
+    text-align: right;
+    font-size: 12px;
+    color: #888;
+    margin-top: 20px;
+    margin-right: 20px;
 }
