@@ -11,7 +11,7 @@
 /* Fonte personalizada Yagami - usando @font-face */
 @font-face {
     font-family: 'Yagami';
-    src: url('fonts/Yagami.otf') format('opentype');
+    src: url('fonts/Yagami-Regular.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -180,9 +180,9 @@ body {
 
 /* Estilo do rodapé com "Desenvolvido por Gabriel" */
 .footer {
-    text-align: right;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
     font-size: 12px;
     color: #888;
-    margin-top: 20px;
-    margin-right: 20px;
 }
