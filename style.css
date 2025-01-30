@@ -29,22 +29,6 @@
     100% { transform: translateY(0px); }
 }
 
-@media (max-width: 768px) {
-    .title-animation-container {
-        flex-direction: column; /* Empilha o título e o presente */
-        gap: 10px; /* Reduz o espaço */
-    }
-
-    .main-title {
-        font-size: 40px; /* Reduz tamanho do título */
-    }
-
-    #lottie-container {
-        width: 300px; /* Diminui o presente */
-        height: 300px;
-    }
-}
-
 /* Animação para os flocos caírem */
 @keyframes fall {
     to {
@@ -85,28 +69,6 @@ body {
     padding: 40px 0;
 }
 
-/* Alinhamento do título com a animação */
-.title-animation-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 40px; /* Espaço entre o título e a animação */
-}
-
-/* Título ao lado do presente */
-.main-title {
-    font-size: 90px; /* Deixando maior */
-    font-family: "holly-spurs", serif;
-    font-weight: 900;
-    position: relative; /* Permite mover o presente sem afetar o restante */
-    top: 140px;  /* Move o presente para cima */
-    left: 40px;  /* Move o presente para a direita */
-    font-style: italic;
-    color: var(--color-white);
-    text-align: center;
-    white-space: nowrap; /* Evita quebra de linha */
-    position: relative; /* Necessário para as luzes ficarem em volta */
-}
 
 /* Ajuste do presente animado */
 #lottie-container {
