@@ -69,6 +69,22 @@ body {
     padding: 40px 0;
 }
 
+.title-container {
+    position: relative; /* Mantém o contexto do posicionamento */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-title {
+    position: absolute; /* Agora ele fica sobreposto e não empurra nada */
+    top: -120px; /* Ajuste fino para subir ou descer */
+    left: 50%;
+    transform: translateX(-50%); /* Mantém centralizado */
+    width: 100%; /* Ocupa o espaço necessário */
+    max-width: 1590px; /* Ajuste o tamanho máximo */
+    height: auto;
+}
 
 /* Ajuste do presente animado */
 #lottie-container {
