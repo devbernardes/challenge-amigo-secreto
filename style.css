@@ -29,11 +29,27 @@
     100% { transform: translateY(0px); }
 }
 
-/* Animação para os flocos caírem */
-@keyframes fall {
+/* Animação para os flocos de neve */
+@keyframes fall-slow {
     to {
         transform: translateY(100vh);
+        opacity: 0;
     }
+}
+
+@keyframes fall-fast {
+    to {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes windEffect {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+    75% { transform: rotate(-1deg); }
+    100% { transform: rotate(0deg); }
 }
 
 @media (max-width: 768px) {
@@ -57,8 +73,8 @@ body {
     height: 100vh;
     background-color: var(--color-primary);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     font-family: 'Yagami', sans-serif;
 }
 
@@ -66,7 +82,7 @@ body {
 .main-content {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
     width: 100%;
 }
 
@@ -87,13 +103,16 @@ body {
 }
 
 .custom-title {
-    position: absolute; /* Agora ele fica sobreposto e não empurra nada */
-    top: -140px; /* Ajuste fino para subir ou descer */
-    left: 44%;
-    transform: translateX(-50%); /* Mantém centralizado */
-    width: 115%; /* Ocupa o espaço necessário */
+    position: absolute;
+    top: -140px;
+    left: -10%;
+    transform: translateX(-50%);
+    width: 115%;
     height: auto;
+    transform-origin: center center; /* Define o centro como ponto fixo */
+    animation: windEffect 3s infinite ease-in-out;
 }
+
 
 /* Ajuste do presente animado */
 #lottie-container {
@@ -101,8 +120,8 @@ body {
     height: 500px;
     display: flex;
     position: relative; /* Permite mover o presente sem afetar o restante */
-    top: 90px;  /* Move o presente para cima */
-    left: 20px;  /* Move o presente para a direita */
+    top: 40px;  /* Move o presente para cima */
+    left: -30px;  /* Move o presente para a direita */
     justify-content: center;
     align-items: center;
     animation: flutuar 3s ease-in-out infinite;
@@ -117,9 +136,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 40px 20px; /* Aumentei o padding para dar mais espaço interno */
     width: 100%;
+    margin-top: -100px; /* Movi a área branca para cima */
+    min-height: 50vh; /* Garante que a área branca ocupe toda a altura da tela */
+    box-sizing: border-box; /* Inclui padding e border no cálculo da altura */
 }
+
 
 /* Títulos */
 .section-title {
@@ -129,6 +152,8 @@ body {
     color: var(--color-primary);
     margin: 10px 0;
     text-align: center;
+    position: relative; /* Permite que possamos mover o título */
+    top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
 }
 
 /* Campo de entrada */
@@ -137,7 +162,8 @@ body {
     justify-content: center;
     width: 100%;
     max-width: 600px;
-    margin-top: 20px;
+    position: relative; /* Permite que possamos mover o título */
+    top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
 }
 
 .input-name {
@@ -224,15 +250,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;  /* Move o botão para a esquerda */
-    width: 100%;
-    padding: 20px 40px;
+    width: 150%;
+    padding: 20px 60px;
     color: var(--color-white);
     background-color: var(--color-button);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     border-radius: 25px;
-    margin-left: -45px;  /* Ajuste o valor conforme necessário */
+    margin-left: -100px;  /* Ajuste o valor conforme necessário */
+    position: relative; /* Permite que possamos mover o título */
+    top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
 }
 
 
@@ -253,19 +281,32 @@ body {
     left: 0;
     width: 100%;
     height: 100vh;
-    pointer-events: none; /* Não interfere com cliques */
+    pointer-events: none; /* Evita interferência em cliques */
     z-index: -1;
 }
 
-.snowflake {
+/* Flocos menores e mais lentos */
+.snowflake.slow {
     position: absolute;
     top: -10px;
     background-color: white;
-    width: 8px;
-    height: 8px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    opacity: 0.8;
-    animation: fall linear infinite;
+    opacity: 0.6;
+    animation: fall-slow linear infinite;
+}
+
+/* Flocos maiores e mais rápidos */
+.snowflake.fast {
+    position: absolute;
+    top: -10px;
+    background-color: white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: fall-fast linear infinite;
 }
 
 /* Rodapé */

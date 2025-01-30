@@ -29,24 +29,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function createSnowflake() {
         const snowflake = document.createElement("div");
-        snowflake.classList.add("snowflake");
+        const isFast = Math.random() > 0.5; // Define aleatoriamente se o floco será rápido ou lento
 
-        // Posição inicial aleatória
+        snowflake.classList.add("snowflake", isFast ? "fast" : "slow");
+
+        // Define posição e duração aleatórias
         snowflake.style.left = Math.random() * 100 + "vw";
-        snowflake.style.animationDuration = Math.random() * 3 + 2 + "s"; // Duração aleatória
-        snowflake.style.opacity = Math.random();
+        snowflake.style.animationDuration = (isFast ? (Math.random() * 2 + 3) : (Math.random() * 5 + 7)) + "s";
 
         snowContainer.appendChild(snowflake);
 
         // Remove o floco após cair
         setTimeout(() => {
             snowflake.remove();
-        }, 5000);
+        }, isFast ? 5000 : 8000); // Tempo maior para os flocos lentos
     }
 
-    // Criar flocos a cada 300ms
-    setInterval(createSnowflake, 300);
+    // Criar flocos de neve a cada 200ms
+    setInterval(createSnowflake, 200);
 });
+
 
 // testando funcionalide do botão adicionar
 
