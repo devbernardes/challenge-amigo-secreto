@@ -8,15 +8,51 @@
     --color-white: #FFFFFF;
 }
 
-/* Fonte personalizada Yagami - usando @font-face */
+/* Fonte personalizada */
 @font-face {
     font-family: 'Yagami';
-    src: url('fonts/Yagami-Regular.otf') format('opentype');
+    src: url('Fontes/Yagami.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
-/* Estilos gerais */
+@font-face {
+    font-family: 'holly-spurs';
+    src: url('Fontes/holly-spurs.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@keyframes flutuar {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@media (max-width: 768px) {
+    .title-animation-container {
+        flex-direction: column; /* Empilha o título e o presente */
+        gap: 10px; /* Reduz o espaço */
+    }
+
+    .main-title {
+        font-size: 40px; /* Reduz tamanho do título */
+    }
+
+    #lottie-container {
+        width: 300px; /* Diminui o presente */
+        height: 300px;
+    }
+}
+
+/* Animação para os flocos caírem */
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+    }
+}
+
+/* Reset de estilos */
 * {
     margin: 0;
     padding: 0;
@@ -29,9 +65,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Yagami', sans-serif; /* Aplicando a fonte Yagami */
+    font-family: 'Yagami', sans-serif;
 }
 
+/* Layout principal */
 .main-content {
     display: flex;
     flex-direction: column;
@@ -45,7 +82,43 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 0 0;
+    padding: 40px 0;
+}
+
+/* Alinhamento do título com a animação */
+.title-animation-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Espaço entre o título e a animação */
+}
+
+/* Título ao lado do presente */
+.main-title {
+    font-size: 90px; /* Deixando maior */
+    font-family: "holly-spurs", serif;
+    font-weight: 900;
+    position: relative; /* Permite mover o presente sem afetar o restante */
+    top: 140px;  /* Move o presente para cima */
+    left: 40px;  /* Move o presente para a direita */
+    font-style: italic;
+    color: var(--color-white);
+    text-align: center;
+    white-space: nowrap; /* Evita quebra de linha */
+    position: relative; /* Necessário para as luzes ficarem em volta */
+}
+
+/* Ajuste do presente animado */
+#lottie-container {
+    width: 500px; /* Aumentando ainda mais o tamanho */
+    height: 500px;
+    display: flex;
+    position: relative; /* Permite mover o presente sem afetar o restante */
+    top: 70px;  /* Move o presente para cima */
+    left: 40px;  /* Move o presente para a direita */
+    justify-content: center;
+    align-items: center;
+    animation: flutuar 3s ease-in-out infinite;
 }
 
 /* Seção de entrada */
@@ -62,14 +135,6 @@ body {
 }
 
 /* Títulos */
-.main-title {
-    font-size: 48px;
-    font-family: "Merriweather", serif;
-    font-weight: 900;
-    font-style: italic;
-    color: var(--color-white);
-}
-
 .section-title {
     font-family: "Inter", serif;
     font-size: 36px;
@@ -79,7 +144,7 @@ body {
     text-align: center;
 }
 
-/* Contêineres de entrada e botão */
+/* Campo de entrada */
 .input-wrapper {
     display: flex;
     justify-content: center;
@@ -95,23 +160,23 @@ body {
     border-radius: 25px;
     font-size: 16px;
     max-width: 500px;
-    background-color: #f9f9f9; /* Fundo suave para o input */
+    background-color: #f9f9f9;
     transition: all 0.3s ease;
 }
 
 .input-name:focus {
     border-color: var(--color-primary);
-    background-color: var(--color-white); /* Foco com fundo branco */
+    background-color: var(--color-white);
     outline: none;
 }
 
 .input-name::placeholder {
     color: #888;
     font-style: italic;
-    text-align: center; /* Centraliza o texto do placeholder */
+    text-align: center;
 }
 
-/* Melhorando o botão de adicionar */
+/* Botão adicionar */
 .button-add {
     padding: 12px 25px;
     background-color: var(--color-tertiary);
@@ -128,7 +193,7 @@ body {
     background-color: #a1a1a1;
 }
 
-/* Estilos para a lista de amigos */
+/* Lista */
 .name-list {
     width: 100%;
     max-width: 600px;
@@ -156,7 +221,7 @@ body {
     color: var(--color-white);
 }
 
-/* Melhorando o botão de sortear título */
+/* Botão de sortear */
 .button-draw {
     display: flex;
     align-items: center;
@@ -176,13 +241,39 @@ body {
 
 .button-draw:hover {
     background-color: var(--color-button-hover);
+     box-shadow: 0 0 15px rgba(255, 100, 50, 0.6);
+    transform: scale(1.05); /* Aumenta levemente */
+    transition: all 0.3s ease;
 }
 
-/* Estilo do rodapé com "Desenvolvido por Gabriel" */
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none; /* Não interfere com cliques */
+    z-index: -1;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    background-color: white;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: fall linear infinite;
+}
+
+/* Rodapé */
 .footer {
     position: absolute;
-    bottom: 20px;
+    bottom: -60px;
     right: 20px;
-    font-size: 12px;
-    color: #888;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    text-align: right;
+    padding-right: 20px;
 }

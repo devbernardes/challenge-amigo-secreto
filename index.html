@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
@@ -13,14 +14,15 @@
 <body>
     <main class="main-content">
         <header class="header-banner">
-            <h1 class="main-title">Amigo Secreto</h1>
-            <img src="assets/amigo-secreto.png" alt="Imagem representativa de amigo secreto">
+            <div class="title-animation-container">
+                <h1 class="main-title">Amigo Secreto</h1>
+                <div id="lottie-container"></div> <!-- Animação do presente -->
+            </div>
         </header>
         
         <section class="input-section">
             <h2 class="section-title">Digite o nome dos seus amigos</h2>
             <div class="input-wrapper">
-                <!-- Removemos o "Nome do Amigo" e o label associado -->
                 <input type="text" id="amigo" class="input-name" placeholder="Digite um nome">
                 <button class="button-add">Adicionar</button>
             </div>
@@ -37,8 +39,10 @@
         </section>
     </main>
 
+    <div class="snow-container"></div>
+
     <footer class="footer">
-        <p>Desenvolvido por Gabriel</p> <!-- Mantivemos o rodapé com o texto -->
+        <p>Desenvolvido por Gabriel</p> <!-- Flocos de neve-->
     </footer>
 
     <script src="app.js" defer></script>
