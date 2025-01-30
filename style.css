@@ -36,6 +36,16 @@
     }
 }
 
+@media (max-width: 768px) {
+    .custom-title {
+        max-width: 300px; /* Reduz o tamanho do título em telas menores */
+    }
+    #lottie-container {
+        width: 300px; /* Diminui o presente */
+        height: 300px;
+    }
+}
+
 /* Reset de estilos */
 * {
     margin: 0;
@@ -78,22 +88,21 @@ body {
 
 .custom-title {
     position: absolute; /* Agora ele fica sobreposto e não empurra nada */
-    top: -120px; /* Ajuste fino para subir ou descer */
-    left: 50%;
+    top: -140px; /* Ajuste fino para subir ou descer */
+    left: 44%;
     transform: translateX(-50%); /* Mantém centralizado */
-    width: 100%; /* Ocupa o espaço necessário */
-    max-width: 1590px; /* Ajuste o tamanho máximo */
+    width: 115%; /* Ocupa o espaço necessário */
     height: auto;
 }
 
 /* Ajuste do presente animado */
 #lottie-container {
-    width: 500px; /* Aumentando ainda mais o tamanho */
+    width: 400px; /* Aumentando ainda mais o tamanho */
     height: 500px;
     display: flex;
     position: relative; /* Permite mover o presente sem afetar o restante */
-    top: 70px;  /* Move o presente para cima */
-    left: 40px;  /* Move o presente para a direita */
+    top: 90px;  /* Move o presente para cima */
+    left: 20px;  /* Move o presente para a direita */
     justify-content: center;
     align-items: center;
     animation: flutuar 3s ease-in-out infinite;
@@ -146,6 +155,7 @@ body {
     border-color: var(--color-primary);
     background-color: var(--color-white);
     outline: none;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Sombra suave ao focar */
 }
 
 .input-name::placeholder {
@@ -164,7 +174,17 @@ body {
     border: 2px solid #000;
     border-radius: 0 25px 25px 0;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Estado do botão quando o campo está vazio (vermelho) */
+.button-add.invalid {
+    background-color: #ff4d4d; /* Cor vermelha */
+}
+
+/* Estado do botão quando o campo tem nome (verde) */
+.button-add.valid {
+    background-color: #4caf50; /* Cor verde */
 }
 
 .button-add:hover {
@@ -203,15 +223,18 @@ body {
 .button-draw {
     display: flex;
     align-items: center;
+    justify-content: flex-start;  /* Move o botão para a esquerda */
     width: 100%;
-    padding: 10px 40px;
+    padding: 20px 40px;
     color: var(--color-white);
     background-color: var(--color-button);
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     border-radius: 25px;
+    margin-left: -45px;  /* Ajuste o valor conforme necessário */
 }
+
 
 .button-draw img {
     margin-right: 20px;
@@ -248,7 +271,7 @@ body {
 /* Rodapé */
 .footer {
     position: absolute;
-    bottom: -60px;
+    bottom: -100px;
     right: 20px;
     font-size: 14px;
     color: rgba(0, 0, 0, 0.5);
