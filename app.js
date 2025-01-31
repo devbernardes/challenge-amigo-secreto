@@ -2,14 +2,15 @@
 
 // Animação play (sortear)
 document.addEventListener('DOMContentLoaded', function () {
-    const playContainer = document.getElementById('play-animation');
-
-    lottie.loadAnimation({
-        container: playContainer,  // Elemento onde será renderizado
-        renderer: 'svg',
-        loop: true,  // Animação contínua
+    const animacaoPlay = lottie.loadAnimation({
+        container: document.getElementById("play-animation"),
+        renderer: "svg",
+        loop: true,
         autoplay: true,
-        path: 'assets/play-animated.json'  // Substitua pelo caminho correto do seu arquivo JSON
+        path: "assets/play-animation.json",
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid meet' // Mantém proporção
+        }
     });
 });
 
