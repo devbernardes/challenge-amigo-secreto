@@ -29,6 +29,19 @@
     100% { transform: translateY(0px); }
 }
 
+@keyframes moveSanta {
+    0% {
+        right: -20%; /* Começa fora da tela pela direita */
+    }
+    50% {
+        right: 50%; /* No meio da tela */
+    }
+    100% {
+        right: 120%; /* Sai pela esquerda da tela */
+    }
+}
+
+
 /* Animação para os flocos de neve */
 @keyframes fall-slow {
     to {
@@ -52,6 +65,12 @@
     100% { transform: rotate(0deg); }
 }
 
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 @media (max-width: 768px) {
     .custom-title {
         max-width: 300px; /* Reduz o tamanho do título em telas menores */
@@ -70,12 +89,13 @@
 }
 
 body {
+    overflow-y: scroll;  /* Permite apenas rolar para baixo */
+    margin: 0;
     height: 100vh;
-    background-color: var(--color-primary);
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    font-family: 'Yagami', sans-serif;
+    background: url('assets/background.png') no-repeat center center fixed;
+    background-size: cover; /* Troque 'contain' por 'cover' para cobrir toda a tela */
+    overflow-x: hidden;
+    background-attachment: scroll; /* Faz o fundo rolar junto com a página */
 }
 
 /* Layout principal */
@@ -93,6 +113,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 40px 0;
+    position: relative;
 }
 
 .title-container {
@@ -113,6 +134,11 @@ body {
     animation: windEffect 3s infinite ease-in-out;
 }
 
+#play-animation {
+    width: 40px;  /* Ajuste o tamanho do ícone */
+    height: 40px;
+    margin-right: 10px; /* Espaço entre a animação e o texto */
+}
 
 /* Ajuste do presente animado */
 #lottie-container {
@@ -121,10 +147,20 @@ body {
     display: flex;
     position: relative; /* Permite mover o presente sem afetar o restante */
     top: 40px;  /* Move o presente para cima */
-    left: -30px;  /* Move o presente para a direita */
+    left: 0px;  /* Move o presente para a direita */
     justify-content: center;
     align-items: center;
     animation: flutuar 3s ease-in-out infinite;
+}
+
+.santa-animation {
+    position: absolute;
+    top: 58%; /* Ajuste a altura conforme necessário */
+    right: -20%; /* Começa fora da tela pela direita */
+    width: 200px; /* Ajuste o tamanho da animação conforme necessário */
+    height: auto;
+    z-index: -1;
+    animation: moveSanta 10s linear infinite; /* Animação para mover de um lado para o outro */
 }
 
 /* Seção de entrada */
@@ -137,10 +173,13 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 40px 20px; /* Aumentei o padding para dar mais espaço interno */
-    width: 100%;
+    width: 100vw; /* Garante que a seção cubra toda a largura da tela */
+    overflow-x: hidden; /* Impede a rolagem lateral */
     margin-top: -100px; /* Movi a área branca para cima */
-    min-height: 50vh; /* Garante que a área branca ocupe toda a altura da tela */
+    min-height: 60vh; /* Garante que a área branca ocupe toda a altura da tela */
     box-sizing: border-box; /* Inclui padding e border no cálculo da altura */
+    min-height: 40vh; /* Garante que a seção de entrada tenha altura suficiente para a rolagem */
+    overflow-y: auto; /* Permite rolar apenas a área de entrada */
 }
 
 
@@ -166,13 +205,13 @@ body {
     top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
 }
 
+/* input */
 .input-name {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid var(--color-tertiary);
     border-radius: 25px;
-    font-size: 16px;
-    max-width: 500px;
+    font-size: 18px;
     background-color: #f9f9f9;
     transition: all 0.3s ease;
 }
@@ -181,7 +220,7 @@ body {
     border-color: var(--color-primary);
     background-color: var(--color-white);
     outline: none;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Sombra suave ao focar */
+    box-shadow: 0px 0px 10px rgba(75, 105, 253, 0.4);
 }
 
 .input-name::placeholder {
@@ -190,31 +229,51 @@ body {
     text-align: center;
 }
 
-/* Botão adicionar */
 .button-add {
-    padding: 12px 25px;
-    background-color: var(--color-tertiary);
-    color: var(--color-text);
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #FE652B, #E55720);
+    color: white;
     font-size: 16px;
     font-family: "Inter", sans-serif;
-    border: 2px solid #000;
-    border-radius: 0 25px 25px 0;
+    border: none;
+    border-radius: 25px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Estado do botão quando o campo está vazio (vermelho) */
-.button-add.invalid {
-    background-color: #ff4d4d; /* Cor vermelha */
+.button-add.invalid,
+.button-add.invalid:hover {
+    background: linear-gradient(135deg, #FF4D4D, #D32F2F);
 }
 
-/* Estado do botão quando o campo tem nome (verde) */
-.button-add.valid {
-    background-color: #4caf50; /* Cor verde */
+/* Mantém a cor no clique */
+.button-add.valid,
+.button-add.valid:hover {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
 }
 
 .button-add:hover {
-    background-color: #a1a1a1;
+    background: linear-gradient(135deg, #E55720, #FE652B); /* Inverte o gradiente no hover */
+    transform: scale(1.05); /* Aumenta levemente */
+}
+
+/* Mantém a cor visível enquanto pressionado */
+.button-add:active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button-add.valid:hover {
+    background-color: #4caf50; /* Verde */
+}
+
+.button-add.invalid:hover {
+    background-color: #ff4d4d; /* Vermelho */
+}
+
+.button-add:focus {
+    outline: none;
 }
 
 /* Lista */
@@ -251,14 +310,14 @@ body {
     align-items: center;
     justify-content: flex-start;  /* Move o botão para a esquerda */
     width: 150%;
-    padding: 20px 60px;
+    padding: 10px 60px;
     color: var(--color-white);
-    background-color: var(--color-button);
-    font-size: 16px;
+    background: linear-gradient(135deg, #fab834, #fdb930);
+    font-size: 25px;
     font-weight: bold;
     cursor: pointer;
     border-radius: 25px;
-    margin-left: -100px;  /* Ajuste o valor conforme necessário */
+    margin-left: -110px;  /* Ajuste o valor conforme necessário */
     position: relative; /* Permite que possamos mover o título */
     top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
 }
@@ -266,13 +325,15 @@ body {
 
 .button-draw img {
     margin-right: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .button-draw:hover {
-    background-color: var(--color-button-hover);
-     box-shadow: 0 0 15px rgba(255, 100, 50, 0.6);
+    background: linear-gradient(135deg, #fa9b2e, #fc9015);
+    box-shadow: 0 0 15px rgba(255, 131, 1,);
     transform: scale(1.05); /* Aumenta levemente */
     transition: all 0.3s ease;
+    animation: pulse 1.5s infinite;
 }
 
 .snow-container {
@@ -311,11 +372,40 @@ body {
 
 /* Rodapé */
 .footer {
-    position: absolute;
-    bottom: -100px;
-    right: 20px;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.5);
-    text-align: right;
-    padding-right: 20px;
+    position: fixed; /* Fixa o rodapé na parte inferior */
+    bottom: -5px; /* Distância do rodapé até a parte inferior da tela */
+    right: 20px; /* Alinha o rodapé à direita */
+    color: #53cdfa; /* Cor do texto */
+    background-color: transparent;
+    z-index: 9999; /* Garante que o rodapé fique sobre outros elementos */
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra suave para dar profundidade */
+    padding: 10px 0;
+    opacity: 1; /* Inicia o rodapé visível */
+    display: flex; /* Adiciona flexbox para alinhar os itens na mesma linha */
+    justify-content: flex-start; /* Ajusta a posição para a esquerda */
+    align-items: center; /* Alinha o conteúdo verticalmente */
+}
+
+.footer p {
+    margin: 0; /* Remove a margem do parágrafo */
+    padding-left: 10px; /* Se desejar um pequeno espaçamento entre os textos */
+}
+
+/* Rodapé escondido com opacidade suave */
+.footer.hidden {
+    transform: translateX(-50%) translateY(100%); /* Desloca o rodapé para fora da tela */
+    opacity: 0; /* Torna o rodapé invisível */
+}
+
+.footer a {
+    color: #ffa04e; /* Laranja pastel */
+    text-decoration: none; /* Remove o sublinhado do link */
+    font-weight: bold; /* Deixa o nome em negrito */
+    transition: color 0.3s ease, transform 0.3s ease; /* Transições suaves */
+}
+
+.footer a:hover {
+    color: #FFB6A2; /* Laranja pastel mais suave ao passar o mouse */
+    text-decoration: underline; /* Sublinha o nome ao passar o mouse */
+    transform: scale(1.1); /* Aumenta um pouco o tamanho do texto para dar mais destaque */
 }

@@ -1,16 +1,44 @@
 //O principal objetivo deste desafio é fortalecer suas habilidades em lógica de programação. Aqui você deverá desenvolver a lógica para resolver o problema.
 
-// Seleciona o container onde a animação será carregada
-const container = document.getElementById("lottie-container");
+// Animação play (sortear)
+document.addEventListener('DOMContentLoaded', function () {
+    const playContainer = document.getElementById('play-animation');
+
+    lottie.loadAnimation({
+        container: playContainer,  // Elemento onde será renderizado
+        renderer: 'svg',
+        loop: true,  // Animação contínua
+        autoplay: true,
+        path: 'assets/play-animated.json'  // Substitua pelo caminho correto do seu arquivo JSON
+    });
+});
+
+// Seleciona o container onde a animação do presente será carregada
+const container = document.getElementById('lottie-container');
 
 // Carrega a animação Lottie
 const animacao = lottie.loadAnimation({
     container: container,
-    renderer: "svg",
+    renderer: 'svg',
     loop: true,  // Agora a animação roda infinitamente
     autoplay: true, // A animação começa automaticamente
-    path: "assets/animacao.json"
+    path: 'assets/animacao.json'
 });
+
+// Carregar a animação Lottie no elemento da div
+document.addEventListener('DOMContentLoaded', function () {
+    const santaContainer = document.getElementById('santa');  // Seleciona o contêiner da animação
+
+    lottie.loadAnimation({
+        container: santaContainer,  // O contêiner onde a animação será inserida
+        renderer: 'svg',            // Tipo de renderização
+        loop: true,                 // Faz a animação repetir
+        autoplay: true,             // A animação começa automaticamente
+        path: 'assets/santa-animation.json'  // Caminho para o arquivo JSON da animação
+    });
+    
+});
+
 
 // Espera o DOM carregar antes de rodar o código
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,18 +52,18 @@ function adicionarAmigo() {
     console.log('Amigo adicionado!');
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const snowContainer = document.querySelector(".snow-container");
+document.addEventListener('DOMContentLoaded', function () {
+    const snowContainer = document.querySelector('.snow-container');
 
     function createSnowflake() {
-        const snowflake = document.createElement("div");
+        const snowflake = document.createElement('div');
         const isFast = Math.random() > 0.5; // Define aleatoriamente se o floco será rápido ou lento
 
-        snowflake.classList.add("snowflake", isFast ? "fast" : "slow");
+        snowflake.classList.add("snowflake", isFast ? 'fast' : 'slow');
 
         // Define posição e duração aleatórias
-        snowflake.style.left = Math.random() * 100 + "vw";
-        snowflake.style.animationDuration = (isFast ? (Math.random() * 2 + 3) : (Math.random() * 5 + 7)) + "s";
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        snowflake.style.animationDuration = (isFast ? (Math.random() * 2 + 3) : (Math.random() * 5 + 7)) + 's';
 
         snowContainer.appendChild(snowflake);
 
@@ -52,43 +80,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // testando funcionalide do botão adicionar
 
-/// 1. Selecionar os elementos necessários
-const inputName = document.getElementById('amigo'); // Campo de entrada
-const buttonAdd = document.querySelector('.button-add'); // Botão de adicionar
+const inputName = document.getElementById('amigo');
+const buttonAdd = document.querySelector('.button-add');
 
-// 2. Função para alterar a cor do botão com base no conteúdo
-function handleButtonState() {
-    // 3. Verificar se o campo não está vazio
+// Adiciona classe ao clicar
+buttonAdd.addEventListener('click', () => {
     if (inputName.value.trim() !== "") {
-        // 4. Se o campo não estiver vazio, o botão vai ficar verde imediatamente
-        buttonAdd.classList.add('valid'); // Botão verde
-        buttonAdd.classList.remove('invalid'); // Remove o estado vermelho
-
-        // 5. Depois de 1 segundo, o botão volta ao estado cinza
-        setTimeout(() => {
-            buttonAdd.classList.remove('valid'); // Volta ao estado cinza
-        }, 1000); // Tempo de 1 segundo
+        buttonAdd.classList.add('valid');
+        buttonAdd.classList.remove('invalid');
     } else {
-        // 6. Se o campo estiver vazio, o botão ficará vermelho
-        buttonAdd.classList.add('invalid'); // Botão vermelho
-
-        // 7. Após 1 segundo, o botão volta ao estado cinza
-        setTimeout(() => {
-            buttonAdd.classList.remove('invalid'); // Volta ao estado cinza
-        }, 1000); // Tempo de 1 segundo
+        buttonAdd.classList.add('invalid');
+        buttonAdd.classList.remove('valid');
     }
-}
+});
 
-// 8. Adicionar evento de clique no botão "Adicionar"
-buttonAdd.addEventListener('click', handleButtonState);
+// Mantém a cor visível enquanto o mouse estiver sobre o botão
+buttonAdd.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+        buttonAdd.classList.remove('valid', 'invalid');
+    }, 1000);
+});
 
-// 9. Adicionar evento de pressionamento da tecla Enter
-inputName.addEventListener('keydown', (event) => {
-    if (event.key === "Enter") {
-        // 10. Impedir o comportamento padrão (evitar form submit, por exemplo)
+// Permite ativação via teclado (Espaço ou Enter)
+document.addEventListener('keydown', (event) => {
+    if (event.key === " " || event.key === "Enter") {
         event.preventDefault();
+        buttonAdd.classList.add(inputName.value.trim() !== "" ? 'valid' : 'invalid');
 
-        // 11. Verificar se o campo está vazio ou não, e validar
-        handleButtonState(); // Chama a função de validar o botão
+        setTimeout(() => {
+            buttonAdd.classList.remove('valid', 'invalid');
+        }, 1000);
     }
+});
+
+// Remove a cor vermelha ou verde depois de 1 segundo
+buttonAdd.addEventListener('mouseup', () => {
+    setTimeout(() => {
+        buttonAdd.classList.remove('valid', 'invalid');
+    }, 1000); // Tempo para voltar à cor laranja
 });

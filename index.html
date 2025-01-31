@@ -16,6 +16,7 @@
         <header class="header-banner">
             <div class="title-animation-container">
                 <img src="assets/titulo amigo secreto.png" alt="Amigo Secreto" class="custom-title">
+                <div class="santa-animation" id="santa"></div> <!-- Animação do papai noel -->
                 <div id="lottie-container"></div> <!-- Animação do presente -->
             </div>
         </header>
@@ -32,7 +33,7 @@
 
             <div class="button-container">
                 <button class="button-draw" onclick="sortearAmigo()" aria-label="Sortear amigo secreto">
-                    <img src="assets/play_circle_outline.png" alt="Ícone para sortear">
+                    <div id="play-animation"></div> <!-- Contêiner do Lottie -->
                     Sortear amigo
                 </button>
             </div>
@@ -42,7 +43,7 @@
     <div class="snow-container"></div>
 
     <footer class="footer">
-        <p>Desenvolvido por Gabriel</p> <!-- Flocos de neve-->
+        <p>Desenvolvido por <a href="https://github.com/devbernardes" target="_blank">devbernardes</a></p>
     </footer>
 
     <script src="app.js" defer></script>
