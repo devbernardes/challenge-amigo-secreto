@@ -149,7 +149,7 @@ body {
 
 .santa-animation {
     position: absolute;
-    top: 58%; /* Ajuste a altura conforme necessário */
+    top: 100%; /* Ajuste a altura conforme necessário */
     right: -20%; /* Começa fora da tela pela direita */
     width: 200px; /* Ajuste o tamanho da animação conforme necessário */
     height: auto;
@@ -160,8 +160,8 @@ body {
 /* Seção de entrada */
 .input-section {
     flex: 60%;
-    background-color: var(--color-secondary);
-    border: 1px solid #000;
+    background: url('assets/textura-natalina.png') repeat;
+    background-size: 700px; /* Diminui a escala da textura */
     border-radius: 64px 64px 0 0;
     display: flex;
     flex-direction: column;
@@ -179,14 +179,15 @@ body {
 
 /* Títulos */
 .section-title {
-    font-family: "Inter", serif;
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--color-primary);
-    margin: 10px 0;
-    text-align: center;
-    position: relative; /* Permite que possamos mover o título */
-    top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
+    margin-top: -140px;  /* Espaço acima da imagem */
+    margin-bottom: -120px;  /* Espaço abaixo da imagem */
+}
+
+.section-image {
+    max-width: 70%;  /* Ajusta a imagem ao tamanho do container */
+    height: auto;     /* Mantém a proporção da imagem */
+    display: block;
+    margin: 0 auto;   /* Centraliza a imagem */
 }
 
 /* Campo de entrada */
@@ -203,7 +204,7 @@ body {
 .input-name {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid var(--color-tertiary);
+    border: 2px solid #424242;
     border-radius: 25px;
     font-size: 18px;
     background-color: #f9f9f9;
@@ -222,10 +223,11 @@ body {
     font-style: italic;
     text-align: center;
 }
-
+ /* Botão de adicionar */
 .button-add {
     position: relative;
-    padding: 10px 18px;
+    padding: 6px 10px 8px 12px; /* (topo, direita, baixo, esquerda) */
+    margin-top: 2px; /* Abaixa um pouco */
     background: linear-gradient(135deg, #fab834, #fab834);
     color: white;
     font-size: 16px;
@@ -235,7 +237,9 @@ body {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
-    right: -15px;
+    right: -2px;
+    top: 5px;
+    border: 2px solid #424242;
 }
 
 .button-add.invalid,
@@ -306,30 +310,14 @@ body {
     align-items: center;
     justify-content: flex-start;  /* Move o botão para a esquerda */
     width: 150%;
-    padding: 10px 60px;
-    color: var(--color-white);
+    padding: 5px 150px;
     background: linear-gradient(135deg, #fab834, #fdb930);
-    font-size: 25px;
-    font-weight: bold;
     cursor: pointer;
     border-radius: 25px;
     margin-left: -110px;  /* Ajuste o valor conforme necessário */
     position: relative; /* Permite que possamos mover o título */
-    top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
-}
-
-.lottie-play-icon {
-    position: relative;
-    width: 30px; /* Ajuste o tamanho da animação */
-    height: 30px; /* Ajuste o tamanho da animação */
-    margin-right: 20px; /* Espaço entre a animação e o texto */
-    transform: scale(7); /* Aumenta o tamanho em 1.5x */
-    right: 10px; /* Distância da borda direita */
-    top: 0px;
-}
-
-.button-text {
-    font-size: 25px; /* Mantém o tamanho do texto */
+    top: -45px; /* Move o título para cima, ajuste o valor conforme necessário */
+    left: 5px;  /* Move apenas o botão para a esquerda */
 }
 
 .button-draw img {
@@ -343,6 +331,29 @@ body {
     transform: scale(1.05); /* Aumenta levemente */
     transition: all 0.3s ease;
     animation: pulse 1.5s infinite;
+}
+
+.lottie-play-icon {
+    position: relative;
+    width: 30px; /* Ajuste o tamanho da animação */
+    height: 30px; /* Ajuste o tamanho da animação */
+    margin-right: 20px; /* Espaço entre a animação e o texto */
+    transform: scale(7); /* Aumenta o tamanho em 1.5x */
+    right: 80px; /* Distância da borda direita */
+    top: 0px;
+}
+
+.button-text {
+    margin-left: 10px;  /* Ajuste o espaçamento entre o ícone e o texto */
+    position: absolute; /* Posiciona o texto dentro do botão */
+    top: 662px;  /* Alinha verticalmente ao centro do botão */
+    left: 770px;  /* Alinha horizontalmente ao centro do botão */
+    transform: translate(-50%, -50%);  /* Ajuste para centralizar com precisão */
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--color-white);
+    user-select: none; /* Impede a seleção do texto */
+    pointer-events: none;
 }
 
 .snow-container {
@@ -384,7 +395,7 @@ body {
     position: fixed; /* Fixa o rodapé na parte inferior */
     bottom: -5px; /* Distância do rodapé até a parte inferior da tela */
     right: 20px; /* Alinha o rodapé à direita */
-    color: #53cdfa; /* Cor do texto */
+    color: #008cff; /* Cor do texto */
     background-color: transparent;
     z-index: 9999; /* Garante que o rodapé fique sobre outros elementos */
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra suave para dar profundidade */
@@ -407,7 +418,7 @@ body {
 }
 
 .footer a {
-    color: #ffa04e; /* Laranja pastel */
+    color: #ff7700; /* Laranja pastel */
     text-decoration: none; /* Remove o sublinhado do link */
     font-weight: bold; /* Deixa o nome em negrito */
     transition: color 0.3s ease, transform 0.3s ease; /* Transições suaves */
