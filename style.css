@@ -160,30 +160,34 @@ body {
 /* Seção de entrada */
 .input-section {
     flex: 60%;
-    background: url('assets/textura-natalina.png') repeat;
-    background-size: 700px; /* Diminui a escala da textura */
+    background: none; /* Remove o fundo */
     border-radius: 64px 64px 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px; /* Aumentei o padding para dar mais espaço interno */
+    padding-top: 20px;  /* Mantém um pequeno espaço superior */
+    padding-bottom: 0;  /* Remove o espaço inferior */
     width: 100vw; /* Garante que a seção cubra toda a largura da tela */
-    overflow-x: hidden; /* Impede a rolagem lateral */
+    overflow: hidden;
     margin-top: -100px; /* Movi a área branca para cima */
-    min-height: 60vh; /* Garante que a área branca ocupe toda a altura da tela */
+    min-height: auto; /* Garante que a área branca ocupe toda a altura da tela */
     box-sizing: border-box; /* Inclui padding e border no cálculo da altura */
-    min-height: 40vh; /* Garante que a seção de entrada tenha altura suficiente para a rolagem */
+    min-height: unset; /* Garante que a seção de entrada tenha altura suficiente para a rolagem */
     overflow-y: auto; /* Permite rolar apenas a área de entrada */
+    pointer-events: none;
 }
 
 
 /* Títulos */
 .section-title {
-    margin-top: -140px;  /* Espaço acima da imagem */
+    margin-top: -170px;  /* Espaço acima da imagem */
     margin-bottom: -120px;  /* Espaço abaixo da imagem */
+    text-align: center;
 }
 
 .section-image {
+    top: -150px;
+    position: relative; /* Permite mover o título */
     max-width: 70%;  /* Ajusta a imagem ao tamanho do container */
     height: auto;     /* Mantém a proporção da imagem */
     display: block;
@@ -198,6 +202,7 @@ body {
     max-width: 600px;
     position: relative; /* Permite que possamos mover o título */
     top: -30px; /* Move o título para cima, ajuste o valor conforme necessário */
+    pointer-events: auto;
 }
 
 /* input */
@@ -209,6 +214,7 @@ body {
     font-size: 18px;
     background-color: #f9f9f9;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .input-name:focus {
@@ -240,6 +246,7 @@ body {
     right: -2px;
     top: 5px;
     border: 2px solid #424242;
+    pointer-events: auto;
 }
 
 .button-add.invalid,
@@ -309,7 +316,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;  /* Move o botão para a esquerda */
-    width: 150%;
+    width: auto;
+    height: auto;
     padding: 5px 150px;
     background: linear-gradient(135deg, #fab834, #fdb930);
     cursor: pointer;
@@ -318,6 +326,8 @@ body {
     position: relative; /* Permite que possamos mover o título */
     top: -45px; /* Move o título para cima, ajuste o valor conforme necessário */
     left: 5px;  /* Move apenas o botão para a esquerda */
+    pointer-events: auto;
+    overflow: hidden; /* Garante que não tenha espaço extra */
 }
 
 .button-draw img {
@@ -346,7 +356,7 @@ body {
 .button-text {
     margin-left: 10px;  /* Ajuste o espaçamento entre o ícone e o texto */
     position: absolute; /* Posiciona o texto dentro do botão */
-    top: 662px;  /* Alinha verticalmente ao centro do botão */
+    top: 622px;  /* Alinha verticalmente ao centro do botão */
     left: 770px;  /* Alinha horizontalmente ao centro do botão */
     transform: translate(-50%, -50%);  /* Ajuste para centralizar com precisão */
     font-size: 25px;

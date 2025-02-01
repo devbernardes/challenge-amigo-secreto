@@ -14,6 +14,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.querySelector(".input-name");
+    const buttonDraw = document.querySelector(".button-draw");
+
+    function bloquearScroll(event) {
+        event.preventDefault();
+    }
+
+    input.addEventListener("wheel", bloquearScroll);
+    buttonDraw.addEventListener("wheel", bloquearScroll);
+});
+
 // Seleciona o container onde a animação do presente será carregada
 const container = document.getElementById('lottie-container');
 
