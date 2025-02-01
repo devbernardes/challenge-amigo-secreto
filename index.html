@@ -20,8 +20,9 @@
         <header class="header-banner">
             <div class="title-animation-container">
                 <img src="assets/titulo amigo secreto.png" alt="Amigo Secreto" class="custom-title">
-                <div class="santa-animation" id="santa"></div> <!-- Animação do papai noel -->
+                <div class="santa-animation" id="santa"></div> <!-- Animação do Papai Noel -->
                 <div id="lottie-container"></div> <!-- Animação do presente -->
+                <div id="stored-names" class="hidden"></div>
             </div>
         </header>
         
@@ -30,30 +31,38 @@
             <h2 class="section-title"> </h2>
             <div class="input-wrapper">
                 <input type="text" id="amigo" class="input-name" placeholder="Digite um nome">
-                <!-- Aqui a div para a mensagem de erro -->
-                <div id="error-message" style="display:none; color:red;">
-                    Por favor, preencha o campo corretamente!
-                </div>
                 <div class="button-wrapper">
-                    <button class="button-add" onclick="adicionarAmigo()">Adicionar</button>
+                    <button class="button-add">Adicionar</button>
                 </div>
             </div>
             <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
             <ul id="resultado" class="result-list" aria-live="polite"></ul>
 
+            <div class="ver-lista-container">
+                <a href="#" id="mostrarLista" class="ver-lista-link">Ver lista dos nomes</a>
+            </div>
+
+
             <div class="button-container">
                 <div class="button-wrapper">
                     <button class="button-draw" onclick="sortearAmigo()" aria-label="Sortear amigo secreto">
                         <div id="play-animation" class="lottie-play-icon"></div>
+                        Sortear amigo
                     </button>
-                    <span class="button-text">Sortear amigo</span>
-                </button>
+                </div>
             </div>
         </section>
     </main>
 
     <div class="snow-container"></div>
 
+        <div id="listaModal" class="modal">
+            <div class="modal-content">
+                <h2 class="modal-title">Lista de Participantes</h2>
+                <ul id="listaNomes" class="modal-list"></ul>
+            </div>
+        </div>
+        
     <footer class="footer">
         <p>Desenvolvido por <a href="https://github.com/devbernardes" target="_blank">@devbernardes</a></p>
     </footer>
