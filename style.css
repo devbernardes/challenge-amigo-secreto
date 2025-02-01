@@ -172,11 +172,10 @@ body {
     margin-top: -100px; /* Movi a área branca para cima */
     min-height: auto; /* Garante que a área branca ocupe toda a altura da tela */
     box-sizing: border-box; /* Inclui padding e border no cálculo da altura */
-    min-height: unset; /* Garante que a seção de entrada tenha altura suficiente para a rolagem */
+    height: fit-content !important; /* Altura se ajusta ao conteúdo real */
     overflow-y: auto; /* Permite rolar apenas a área de entrada */
     pointer-events: none;
 }
-
 
 /* Títulos */
 .section-title {
@@ -192,6 +191,8 @@ body {
     height: auto;     /* Mantém a proporção da imagem */
     display: block;
     margin: 0 auto;   /* Centraliza a imagem */
+    filter: brightness(1.1);
+    filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.8)) saturate(1.5) contrast(1.2);
 }
 
 /* Campo de entrada */
@@ -215,6 +216,7 @@ body {
     background-color: #f9f9f9;
     transition: all 0.3s ease;
     pointer-events: auto;
+    text-align: center;
 }
 
 .input-name:focus {
@@ -247,6 +249,7 @@ body {
     top: 5px;
     border: 2px solid #424242;
     pointer-events: auto;
+    font-weight: bold;
 }
 
 .button-add.invalid,
@@ -357,7 +360,7 @@ body {
     margin-left: 10px;  /* Ajuste o espaçamento entre o ícone e o texto */
     position: absolute; /* Posiciona o texto dentro do botão */
     top: 622px;  /* Alinha verticalmente ao centro do botão */
-    left: 770px;  /* Alinha horizontalmente ao centro do botão */
+    left: 750px;  /* Alinha horizontalmente ao centro do botão */
     transform: translate(-50%, -50%);  /* Ajuste para centralizar com precisão */
     font-size: 25px;
     font-weight: bold;
@@ -438,4 +441,16 @@ body {
     color: #FFB6A2; /* Laranja pastel mais suave ao passar o mouse */
     text-decoration: underline; /* Sublinha o nome ao passar o mouse */
     transform: scale(1.1); /* Aumenta um pouco o tamanho do texto para dar mais destaque */
+}
+
+/* Cor da mensagem de erro */
+.input-name.invalid::placeholder{
+    color: #ff0000; /* Coloca o texto do campo de entrada em vermelho */
+}
+
+#error-message {
+    color: red;  /* Altera a cor da mensagem de erro para vermelha */
+    font-size: 14px;  /* Ajusta o tamanho da fonte */
+    margin-top: 10px;  /* Dá um pequeno espaçamento */
+    display: none;  /* Inicialmente escondido */
 }

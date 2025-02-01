@@ -11,6 +11,10 @@
     <title>Amigo Secreto</title>
 </head>
 
+<audio id="background-music" autoplay loop>
+    <source src="assets/musica-natalina.mp3" type="audio/mpeg">
+</audio>
+
 <body>
     <main class="main-content">
         <header class="header-banner">
@@ -26,11 +30,14 @@
             <h2 class="section-title"> </h2>
             <div class="input-wrapper">
                 <input type="text" id="amigo" class="input-name" placeholder="Digite um nome">
+                <!-- Aqui a div para a mensagem de erro -->
+                <div id="error-message" style="display:none; color:red;">
+                    Por favor, preencha o campo corretamente!
+                </div>
                 <div class="button-wrapper">
-                    <button class="button-add">Adicionar</button>
+                    <button class="button-add" onclick="adicionarAmigo()">Adicionar</button>
                 </div>
             </div>
-           
             <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
             <ul id="resultado" class="result-list" aria-live="polite"></ul>
 
@@ -42,7 +49,6 @@
                     <span class="button-text">Sortear amigo</span>
                 </button>
             </div>
-        </div>
         </section>
     </main>
 

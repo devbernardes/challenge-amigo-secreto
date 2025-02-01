@@ -1,6 +1,15 @@
-//O principal objetivo deste desafio é fortalecer suas habilidades em lógica de programação. Aqui você deverá desenvolver a lógica para resolver o problema.
+// Música de fundo
+document.addEventListener('click', function () {
+    const audio = document.getElementById("background-music");
 
-// Animação play (sortear)
+    // Começa o áudio
+    audio.play();
+
+    // Define o volume para um valor baixo logo após iniciar
+    audio.volume = 0.03; // Ajuste para o volume desejado
+});
+
+// Animação do botão "Sortear"
 document.addEventListener('DOMContentLoaded', function () {
     const animacaoPlay = lottie.loadAnimation({
         container: document.getElementById("play-animation"),
@@ -14,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Bloquear o scroll nos campos de input e botão "Sortear"
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.querySelector(".input-name");
     const buttonDraw = document.querySelector(".button-draw");
@@ -26,45 +36,76 @@ document.addEventListener("DOMContentLoaded", function () {
     buttonDraw.addEventListener("wheel", bloquearScroll);
 });
 
-// Seleciona o container onde a animação do presente será carregada
+// Carregar animação do presente
 const container = document.getElementById('lottie-container');
-
-// Carrega a animação Lottie
 const animacao = lottie.loadAnimation({
     container: container,
     renderer: 'svg',
-    loop: true,  // Agora a animação roda infinitamente
+    loop: true,  // A animação roda infinitamente
     autoplay: true, // A animação começa automaticamente
     path: 'assets/animacao.json'
 });
 
-// Carregar a animação Lottie no elemento da div
+// Carregar animação do Papai Noel
 document.addEventListener('DOMContentLoaded', function () {
-    const santaContainer = document.getElementById('santa');  // Seleciona o contêiner da animação
-
+    const santaContainer = document.getElementById('santa');
     lottie.loadAnimation({
-        container: santaContainer,  // O contêiner onde a animação será inserida
-        renderer: 'svg',            // Tipo de renderização
-        loop: true,                 // Faz a animação repetir
-        autoplay: true,             // A animação começa automaticamente
-        path: 'assets/santa-animation.json'  // Caminho para o arquivo JSON da animação
+        container: santaContainer,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'assets/santa-animation.json'
     });
-    
 });
 
+// Função chamada quando o botão "Adicionar" for clicado
+const inputName = document.getElementById('amigo');
+const buttonAdd = document.querySelector('.button-add');
+const originalPlaceholder = inputName.placeholder;  // O placeholder original
 
-// Espera o DOM carregar antes de rodar o código
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Seleciona o botão e associa o evento
-    document.querySelector('.button-add').addEventListener('click', adicionarAmigo);
+
+    buttonAdd.addEventListener('click', () => {
+        console.log("Campo de entrada:", inputName.value);  // Verifique o valor atual do input
+
+        if (inputName.value.trim() === "") {
+            inputName.value = '';  // Limpa o valor do input
+            inputName.placeholder = 'Por favor, preencha o campo corretamente!';  // Exibe a mensagem de erro no placeholder
+            inputName.classList.add('invalid');   // Altera a classe do input para erro
+            buttonAdd.classList.add('invalid');   // Altera a classe do botão para erro
+            buttonAdd.classList.remove('valid');  // Remove a classe de sucesso
+            errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+        } else {
+            inputName.placeholder = originalPlaceholder;  // Restaura o placeholder original
+            errorMessage.style.display = 'none';  // Esconde a mensagem de erro
+            inputName.classList.remove('invalid');  // Remove a classe 'invalid'
+            buttonAdd.classList.remove('invalid');  // Remove a classe 'invalid' do botão
+            buttonAdd.classList.add('valid');  // Altera a classe do botão para sucesso
+
+            // Adicionar o nome à lista
+            const nomeAmigo = inputName.value.trim();
+            const listaAmigos = document.getElementById("listaAmigos");
+            const listaItem = document.createElement("li");  // Cria um novo item de lista
+            listaItem.textContent = nomeAmigo;  // Coloca o nome no item de lista
+            listaAmigos.appendChild(listaItem);  // Adiciona o item na lista
+
+            // Limpa o campo de input
+            inputName.value = "";
+        }
+    });
 });
 
-// Função que será chamada quando o botão for clicado
-function adicionarAmigo() {
-    // Aqui vai a lógica para adicionar o amigo
-    console.log('Amigo adicionado!');
-}
 
+// Quando o input é focado, restaura o placeholder original e esconde a mensagem de erro
+inputName.addEventListener('focus', () => {
+    inputName.placeholder = originalPlaceholder;  // Restaura o texto original do placeholder
+    inputName.classList.remove('invalid');  // Remove a classe de erro
+    buttonAdd.classList.remove('invalid');  // Remove a classe de erro do botão
+});
+
+
+// Função para criar flocos de neve
 document.addEventListener('DOMContentLoaded', function () {
     const snowContainer = document.querySelector('.snow-container');
 
@@ -90,13 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(createSnowflake, 200);
 });
 
-
-// testando funcionalide do botão adicionar
-
-const inputName = document.getElementById('amigo');
-const buttonAdd = document.querySelector('.button-add');
-
-// Adiciona classe ao clicar
+// Função para testar a cor do botão ao clicar
 buttonAdd.addEventListener('click', () => {
     if (inputName.value.trim() !== "") {
         buttonAdd.classList.add('valid');
@@ -105,6 +140,11 @@ buttonAdd.addEventListener('click', () => {
         buttonAdd.classList.add('invalid');
         buttonAdd.classList.remove('valid');
     }
+});
+
+// Previne o scroll nas seções
+document.querySelector('.input-section').addEventListener('wheel', function (event) {
+    event.preventDefault();
 });
 
 // Mantém a cor visível enquanto o mouse estiver sobre o botão
