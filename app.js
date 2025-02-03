@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const presentAnimation = lottie.loadAnimation({
     container: document.getElementById('lottie-container'),
     renderer: 'svg',
-    loop: false, // Presente só anima quando um nome toca nele
+    loop: false,
     autoplay: false,
     path: 'assets/animacao.json'
 });
@@ -54,8 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
 const inputName = document.getElementById('amigo');
 const buttonAdd = document.querySelector('.button-add');
 const originalPlaceholder = inputName.placeholder;
-let listaDeAmigos = []; // Altere de const para let
+let listaDeAmigos = [];
 
+// 🎁 Som do presente
+const presentSound = new Audio('assets/som-presente.mp3');
 
 // ✅ Evento de clique no botão "Adicionar"
 buttonAdd.addEventListener('click', () => {
@@ -65,7 +67,7 @@ buttonAdd.addEventListener('click', () => {
         handleInvalidInput();
     } else {
         handleValidInput(inputValue);
-        inputName.value = ""; // 🔥 Agora limpa o input imediatamente!
+        inputName.value = "";
     }
 });
 
@@ -88,11 +90,7 @@ function handleValidInput(name) {
     buttonAdd.classList.remove('invalid');
     buttonAdd.classList.add('valid');
 
-    // Adiciona nome à lista
     listaDeAmigos.push(name);
-    console.log("Lista de amigos:", listaDeAmigos);
-
-    // ✨ Faz o TEXTO do input subir para o presente
     animateTextEntry(name);
 }
 
@@ -114,7 +112,7 @@ document.addEventListener('keydown', (event) => {
     }, 1150);
 });
 
-// 🏆 Faz o TEXTO do input se mover para o presente
+// 🏆 Animação do texto + presente com som
 function animateTextEntry(name) {
     const inputBox = inputName.getBoundingClientRect();
     const inputTextX = inputBox.left + inputBox.width / 2;
@@ -133,7 +131,7 @@ function animateTextEntry(name) {
 
     document.body.appendChild(tempText);
 
-    // 🎭 Animação do texto subindo e ativando o presente
+    // Animação do texto
     tempText.animate([
         { transform: 'translate(-50%, 0)', opacity: 1 },
         { transform: `translate(-50%, -200px) scale(1.5)`, opacity: 1, offset: 0.7 },
@@ -143,8 +141,11 @@ function animateTextEntry(name) {
         easing: 'ease-out'
     });
 
-    // 🎁 Ativa a animação do presente
+    // Controle do som e animação do presente
     setTimeout(() => {
+        presentSound.currentTime = 0;
+        presentSound.volume = 0.3;
+        presentSound.play().catch(error => console.log('Autoplay bloqueado'));
         presentAnimation.goToAndPlay(0, true);
     }, 1800);
 
@@ -161,7 +162,7 @@ buttonAdd.addEventListener('mouseup', () => {
     }, 1000);
 });
 
-// Adicione estas funções no final do arquivo
+// 🗑️ Funcionalidades da lista
 document.getElementById('mostrarLista').addEventListener('click', (e) => {
     e.preventDefault();
     document.getElementById('listaModal').style.display = 'block';
@@ -196,15 +197,15 @@ function atualizarListaModal() {
 }
 
 function removerNome(nome) {
-    // Encontra o PRIMEIRO índice do nome (remove apenas uma ocorrência)
     const index = listaDeAmigos.indexOf(nome);
 
     if (index !== -1) {
-        listaDeAmigos.splice(index, 1); // Remove apenas 1 elemento na posição encontrada
-        atualizarListaModal();
+        listaDeAmigos.splice(index, 1);
 
-        // Atualiza a lista principal (remove o elemento correto)
+        // Atualiza ambas as listas
+        atualizarListaModal();
         const listaPrincipal = document.getElementById('listaAmigos');
+
         if (listaPrincipal) {
             const items = listaPrincipal.querySelectorAll('li');
             if (items[index]) {
@@ -213,3 +214,11 @@ function removerNome(nome) {
         }
     }
 }
+
+// Pré-carrega o som após primeira interação
+document.addEventListener('click', function () {
+    presentSound.play().then(() => {
+        presentSound.pause();
+        presentSound.currentTime = 0;
+    });
+}, { once: true });
