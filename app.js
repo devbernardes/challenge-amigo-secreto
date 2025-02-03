@@ -59,9 +59,18 @@ let listaDeAmigos = [];
 // 🎁 Som do presente
 const presentSound = new Audio('assets/som-presente.mp3');
 
+// som do clique adicionar
+const clickSound = new Audio('assets/clique-adicionar.mp3');
+clickSound.volume = 0.2; // Volume mais baixo que o som do presente
+
+
 // ✅ Evento de clique no botão "Adicionar"
 buttonAdd.addEventListener('click', () => {
+    setTimeout(() => clickSound.play(), 50);
     const inputValue = inputName.value.trim();
+
+    clickSound.currentTime = 0; // Reinicia o som
+    clickSound.play().catch(() => { }); // Toca o clique
 
     if (inputValue === "") {
         handleInvalidInput();
