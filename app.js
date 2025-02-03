@@ -1,3 +1,6 @@
+// Variáveis globais
+let scrollPosicao = 0;
+
 // 🎭 Animação do botão "Sortear"
 document.addEventListener('DOMContentLoaded', function () {
     lottie.loadAnimation({
@@ -47,44 +50,38 @@ document.addEventListener('DOMContentLoaded', function () {
 const inputName = document.getElementById('amigo');
 const buttonAdd = document.querySelector('.button-add');
 const originalPlaceholder = inputName.placeholder;
-let listaDeAmigos = []; // Lista dinâmica de participantes
-let sorteados = []; // Lista para armazenar o resultado do sorteio
+let listaDeAmigos = [];
+let sorteados = [];
 
 // 🎁 Som do presente
 const presentSound = new Audio('assets/som-presente.mp3');
 
-// som do clique adicionar
+// Sons de interface
 const clickSound = new Audio('assets/clique-adicionar.mp3');
-clickSound.volume = 0.2; // Volume mais baixo que o som do presente
-
-// som do erro botão adicionar
+clickSound.volume = 0.2;
 const errorSound = new Audio('assets/som-erro.mp3');
 
 // ✅ Evento de clique no botão "Adicionar"
 buttonAdd.addEventListener('click', () => {
     const inputValue = inputName.value.trim();
 
-    // Se o input for inválido
     if (inputValue === "") {
         handleInvalidInput();
-        errorSound.play().catch(() => { }); // Toca som de erro
+        errorSound.play().catch(() => { });
     } else {
-        // Se o input for válido
         handleValidInput(inputValue);
         inputName.value = "";
-
-        // Aqui, o som de clique é tocado apenas quando o input é válido
-        clickSound.currentTime = 0; // Reinicia o som de clique
-        setTimeout(() => clickSound.play(), 50); // Toca som de clique
+        clickSound.currentTime = 0;
+        setTimeout(() => clickSound.play(), 50);
     }
 });
 
 // ✅ Restaura o estado original quando o input recebe foco
 inputName.addEventListener('focus', resetInputState);
 
-// 🚫 Input inválido: feedback visual
+// 🚫 Input inválido
 function handleInvalidInput() {
-    errorSound.play().catch(() => { }); // Toca som de erro
+    errorSound.play().catch(() => { });
     inputName.value = '';
     inputName.placeholder = 'Por favor, preencha o campo corretamente!';
     inputName.classList.add('invalid');
@@ -92,25 +89,24 @@ function handleInvalidInput() {
     buttonAdd.classList.remove('valid');
 }
 
-// ✅ Input válido: adiciona à lista e faz a animação
+// ✅ Input válido
 function handleValidInput(name) {
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
     buttonAdd.classList.add('valid');
-
     listaDeAmigos.push(name);
     animateTextEntry(name);
 }
 
-// 🔄 Restaura estado do input ao focar
+// 🔄 Restaura estado do input
 function resetInputState() {
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
 }
 
-// ✅ Captura evento "Enter" no teclado
+// ✅ Captura evento "Enter"
 document.addEventListener('keydown', (event) => {
     if (event.key === "Enter" && document.activeElement === inputName) {
         event.preventDefault();
@@ -121,7 +117,7 @@ document.addEventListener('keydown', (event) => {
     }, 1150);
 });
 
-// 🏆 Animação do texto + presente com som
+// 🏆 Animação do texto + presente
 function animateTextEntry(name) {
     const inputBox = inputName.getBoundingClientRect();
     const inputTextX = inputBox.left + inputBox.width / 2;
@@ -140,7 +136,6 @@ function animateTextEntry(name) {
 
     document.body.appendChild(tempText);
 
-    // Animação do texto
     tempText.animate([
         { transform: 'translate(-50%, 0)', opacity: 1 },
         { transform: `translate(-50%, -200px) scale(1.5)`, opacity: 1, offset: 0.7 },
@@ -150,7 +145,6 @@ function animateTextEntry(name) {
         easing: 'ease-out'
     });
 
-    // Controle do som e animação do presente
     setTimeout(() => {
         presentSound.currentTime = 0;
         presentSound.volume = 0.3;
@@ -164,7 +158,7 @@ function animateTextEntry(name) {
     }, 2500);
 }
 
-// 🌟 Efeito de clique do botão "Adicionar"
+// 🌟 Efeito de clique do botão
 buttonAdd.addEventListener('mouseup', () => {
     setTimeout(() => {
         buttonAdd.classList.remove('valid', 'invalid');
@@ -174,24 +168,145 @@ buttonAdd.addEventListener('mouseup', () => {
 // 🗑️ Funcionalidades da lista
 document.getElementById('mostrarLista').addEventListener('click', (e) => {
     e.preventDefault();
-    const modal = document.getElementById('listaModal');
-    modal.style.display = 'block';
-    modal.focus();  // Garantindo o foco no modal quando ele abrir
+    abrirModal('listaModal');
     atualizarListaModal();
-    // Fechar o modal ao pressionar a tecla Escape
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            modal.style.display = 'none';
-        }
+});
+
+// 🎲 Função de Sorteio
+function sortearAmigos() {
+    if (listaDeAmigos.length < 2) {
+        alert("❄️ Precisa de pelo menos 2 participantes!");
+        return;
+    }
+
+    const uniqueNames = new Set(listaDeAmigos);
+    if (uniqueNames.size !== listaDeAmigos.length) {
+        alert("⚠️ Nomes repetidos encontrados!");
+        return;
+    }
+
+    let shuffled = [...listaDeAmigos];
+    do {
+        shuffled = shuffle([...listaDeAmigos]);
+    } while (!validarSorteio(shuffled));
+
+    sorteados = shuffled.map((nome, index) => ({
+        nome,
+        amigoSecreto: shuffled[(index + 1) % shuffled.length]
+    }));
+
+    mostrarResultadoSorteio();
+    abrirModal('modal-identificacao');
+}
+
+// Funções auxiliares do sorteio
+function validarSorteio(shuffled) {
+    return shuffled.every((nome, index) =>
+        nome !== shuffled[(index + 1) % shuffled.length]
+    );
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// 📜 Exibe resultados
+function mostrarResultadoSorteio() {
+    const lista = document.getElementById('modal-resultados');
+    lista.innerHTML = '';
+
+    sorteados.forEach((item) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="participante">
+                <span>${item.nome}</span>
+                <button class="eye-button" data-nome="${item.nome}">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div id="reveal-${item.nome}" class="revealed-name hidden">
+                ${item.amigoSecreto}
+            </div>
+        `;
+        lista.appendChild(li);
+    });
+}
+
+function toggleAmigo(nome, event) {
+    const elemento = document.getElementById(`reveal-${nome}`);
+    const button = event.currentTarget;
+    const icon = button.querySelector('i');
+
+    // Revelar/ocultar imediatamente
+    const isHidden = elemento.classList.toggle('hidden');
+    elemento.style.display = isHidden ? 'none' : 'block';
+    icon.classList.toggle('fa-eye-slash', !isHidden);
+    icon.classList.toggle('fa-eye', isHidden);
+
+    if (!isHidden) {
+        const resultado = sorteados.find(item => item.nome === nome);
+        elemento.textContent = resultado.amigoSecreto;
+        
+        // Animação não interfere no clique
+        elemento.animate([
+            { opacity: 0 },
+            { opacity: 1 }
+        ], {
+            duration: 200,
+            fill: 'forwards' // Mantém o estado final
+        });
+    }
+}
+
+// 🖼️ Controle de Modais
+function abrirModal(modalId) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+    });
+    scrollPosicao = window.pageYOffset;
+    document.body.classList.add('modal-aberto');
+    document.body.style.top = `-${scrollPosicao}px`;
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+    modal.focus();
+}
+
+function fecharModal(modalId) {
+    document.body.classList.remove('modal-aberto');
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none'; // 👈 Garanta que está ocultando
+    window.scrollTo(0, scrollPosicao);
+    document.body.style.top = '';
+}
+
+// Event Listeners para modais
+document.querySelectorAll('.close-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+        fecharModal(btn.closest('.modal').id);
     });
 });
 
 window.addEventListener('click', (e) => {
-    if (e.target.id === 'listaModal') {
-        document.getElementById('listaModal').style.display = 'none';
+    if (e.target.classList.contains('modal')) {
+        fecharModal(e.target.id);
     }
 });
 
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (modal.style.display === 'block') {
+                fecharModal(modal.id);
+            }
+        });
+    }
+});
+
+// 🗑️ Atualização da lista
 function atualizarListaModal() {
     const lista = document.getElementById('listaNomes');
     lista.innerHTML = '';
@@ -215,139 +330,62 @@ function atualizarListaModal() {
 
 function removerNome(nome) {
     const index = listaDeAmigos.indexOf(nome);
+    if (index === -1) return;
 
-    if (index !== -1) {
-        listaDeAmigos.splice(index, 1);
+    listaDeAmigos.splice(index, 1);
+    atualizarListaModal();
 
-        // Atualiza ambas as listas
-        atualizarListaModal();
-        const listaPrincipal = document.getElementById('listaAmigos');
-
-        if (listaPrincipal) {
-            const items = listaPrincipal.querySelectorAll('li');
-            if (items[index]) {
-                items[index].remove();
-            }
-        }
+    const listaPrincipal = document.getElementById('listaAmigos');
+    if (listaPrincipal) {
+        const items = listaPrincipal.querySelectorAll('li');
+        if (items[index]) items[index].remove();
     }
 }
 
-// 🎲 Função de Sorteio de Amigos Secretos (atualizada)
-function sortearAmigos() {
-    if (listaDeAmigos.length < 2) {
-        alert("❄️ Precisa de pelo menos 2 participantes para o sorteio!");
-        return;
-    }
+function verificarIdentificacao() {
+    const nomeDigitado = document.getElementById('input-identificacao').value.trim();
+    const nomeNormalizado = nomeDigitado.toLowerCase();
 
-    // Verifica se todos os nomes são únicos
-    const uniqueNames = new Set(listaDeAmigos);
-    if (uniqueNames.size !== listaDeAmigos.length) {
-        alert("⚠️ Nomes repetidos encontrados! Todos os participantes devem ter nomes únicos.");
-        return;
-    }
-
-    let shuffled = [...listaDeAmigos];
-    do {
-        shuffled = shuffle([...listaDeAmigos]);
-    } while (!validarSorteio(shuffled));
-
-    sorteados = shuffled.map((nome, index) => ({
-        nome,
-        amigoSecreto: shuffled[(index + 1) % shuffled.length]
-    }));
-
-    mostrarResultadoSorteio();
-    abrirModalSorteio();
-}
-
-// Função para validar o sorteio
-function validarSorteio(shuffled) {
-    return shuffled.every((nome, index) =>
-        nome !== shuffled[(index + 1) % shuffled.length]
+    // Verificar se existe na lista (case-insensitive)
+    const usuarioEncontrado = listaDeAmigos.find(nome =>
+        nome.toLowerCase() === nomeNormalizado
     );
+
+    // Se NÃO encontrou o usuário
+    if (!usuarioEncontrado) {
+        alert("🚫 Nome não está na lista de participantes!");
+        document.getElementById('input-identificacao').value = ""; // Limpa o campo
+        return; // 👈 Impede totalmente a execução
+    }
+
+    // Se passou da validação (nome existe)
+    usuarioAtual = usuarioEncontrado; // Mantém a grafia original
+    fecharModal('modal-identificacao');
+    abrirModal('modal-sortear');
+    iniciarRevelacaoTemporaria();
 }
 
-// 📜 Exibe o Resultado do Sorteio no Modal (atualizada)
-function mostrarResultadoSorteio() {
-    const lista = document.getElementById('modal-resultados');
-    lista.innerHTML = '';
+function iniciarRevelacaoTemporaria() {
+    const elemento = document.querySelector(`#reveal-${usuarioAtual}`);
+    const button = document.querySelector(`button[data-nome="${usuarioAtual}"]`);
 
-    sorteados.forEach((item) => {
-        const li = document.createElement('li');
-        li.className = 'reveal-container';
-        li.innerHTML = `
-            <div class="participante">
-                <span>${item.nome}</span>
-                <button class="reveal-button" onclick="revelarAmigo('${item.nome}')">
-                    Revelar Amigo Secreto
-                </button>
-            </div>
-            <div id="reveal-${item.nome}" class="revealed-name hidden"></div>
-        `;
-        lista.appendChild(li);
-    });
-}
+    if (!elemento || !button) {
+        console.error('Elemento não encontrado!');
+        return;
+    }
 
-// Revelar o amigo secreto (atualizada)
-function revelarAmigo(nome) {
-    const resultado = sorteados.find(item => item.nome === nome);
-    const elemento = document.getElementById(`reveal-${nome}`);
-
-    elemento.textContent = resultado.amigoSecreto;
+    // Revela o nome
     elemento.classList.remove('hidden');
     elemento.style.display = 'block';
 
-    // Animação adicional
-    elemento.animate([
-        { transform: 'rotateY(90deg)', opacity: 0 },
-        { transform: 'rotateY(0deg)', opacity: 1 }
-    ], {
-        duration: 800,
-        easing: 'ease-out'
-    });
-}
+    // Altera o ícone para "olho fechado"
+    const icon = button.querySelector('i');
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
 
-// Funções para controlar o modal
-function abrirModalSorteio() {
-    const modal = document.getElementById('modal-sortear');
-    modal.style.display = 'block';
-
-    // Foco automático no modal para scroll com teclado
-    modal.focus();
-
-    // Ajuste de scroll para topo
-    modal.querySelector('.modal-list').scrollTo(0, 0);
-
-    // Habilitar scroll suave
-    modal.querySelector('.modal-list').style.scrollBehavior = 'smooth';
-
-    // Fechar com ESC
-    document.addEventListener('keydown', function fecharComESC(event) {
-        if (event.key === 'Escape') fecharModalSorteio();
-    });
-}
-
-function fecharModalSorteio() {
-    document.getElementById('modal-sortear').style.display = 'none';
-}
-
-// Fechar modal da lista
-function fecharModalLista() {
-    document.getElementById('listaModal').style.display = 'none';
-}
-
-// Adicione event listeners para os novos X
-document.querySelectorAll('.close-modal').forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.closest('.modal').style.display = 'none';
-    });
-});
-
-// 🌀 Algoritmo de Embaralhamento (Fisher-Yates) - Mantido
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+    // Oculta após 5 segundos
+    setTimeout(() => {
+        elemento.classList.add('hidden');
+        elemento.style.display = 'none';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }, 5000);
 }
