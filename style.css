@@ -29,6 +29,14 @@
     100% { transform: translateY(0px); }
 }
 
+/* Animação de revelação */
+@keyframes reveal {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+
 @keyframes moveSanta {
     0% {
         right: -20%; /* Começa fora da tela pela direita */
@@ -353,7 +361,7 @@ body {
     margin-bottom: 10px;
     border-radius: 10px;
     font-size: 18px;
-    color: var(--color-text);
+    color: #000000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -520,6 +528,8 @@ body {
     height: 100%;
     background-color: rgba(0,0,0,0.7);
     z-index: 1000;
+    overflow-y: auto; /* Alterado de 'hidden' para 'auto' */
+    -webkit-overflow-scrolling: touch; /* Scroll suave em mobile */
 }
 
 .modal-content {
@@ -531,6 +541,8 @@ body {
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
     border: 3px solid var(--color-primary);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-title {
@@ -539,6 +551,24 @@ body {
     text-align: center;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    padding-right: 40px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #ff0000;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s;
+    z-index: 2;
+}
+
+.close-modal:hover {
+    transform: rotate(90deg) scale(1.2);
+    color: #cc0000;
 }
 
 .modal-list {
@@ -557,6 +587,8 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: 65vh;
+    padding-right: 10px;
 }
 
 .lixeira {
@@ -584,7 +616,49 @@ body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-.ver-lista-link:hover {
+.ver-lista-link:hover, .ver-lista-link:focus {
     color: var(--color-button);
     text-decoration: underline;
+}
+
+#modal-sortear .modal-content {
+    max-width: 600px; /* Largura máxima maior para melhor leitura */
+    margin: 5% auto; /* Alterado de 15% para 5% */
+    transform: translateY(-20%); /* Adicionar esta linha */
+}
+
+.reveal-container {
+    min-height: 60px; /* Altura mínima para cada item */
+    background: var(--color-white);
+    position: relative;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reveal-button {
+    background: var(--color-button);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.reveal-button:hover {
+    background: var(--color-button-hover);
+    transform: scale(1.05);
+}
+
+.revealed-name {
+    font-size: clamp(1.2rem, 3vw, 1.8rem); /* Fonte responsiva */
+    word-break: break-word; /* Quebra de linha para nomes longos */
+    color: var(--color-primary);
+    text-align: center;
+    margin: 15px 0;
+    animation: reveal 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: block;
+    font-weight: 700;
 }

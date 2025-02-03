@@ -11,10 +11,6 @@
     <title>Amigo Secreto</title>
 </head>
 
-<audio id="background-music" autoplay loop>
-    <source src="assets/musica-natalina.mp3" type="audio/mpeg">
-</audio>
-
 <body>
     <main class="main-content">
         <header class="header-banner">
@@ -27,12 +23,12 @@
         </header>
         
         <section class="input-section">
-            <img src="assets/subtitulo.png" alt="Texto explicativo" class="section-image">
+            <img src="assets/subtitulo.png" alt="Texto secundario" class="section-image">
             <h2 class="section-title"> </h2>
             <div class="input-wrapper">
                 <input type="text" id="amigo" class="input-name" placeholder="Digite um nome">
                 <div class="button-wrapper">
-                    <button class="button-add">Adicionar</button>
+                    <button class="button-add" aria-label="Adicionar nome à lista" role="button">Adicionar</button>
                 </div>
             </div>
             <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
@@ -42,10 +38,9 @@
                 <a href="#" id="mostrarLista" class="ver-lista-link">Ver lista dos nomes</a>
             </div>
 
-
             <div class="button-container">
                 <div class="button-wrapper">
-                    <button class="button-draw" onclick="sortearAmigo()" aria-label="Sortear amigo secreto">
+                    <button class="button-draw" onclick="sortearAmigos()" aria-label="Sortear amigo secreto">
                         <div id="play-animation" class="lottie-play-icon"></div>
                         Sortear amigo
                     </button>
@@ -56,19 +51,29 @@
 
     <div class="snow-container"></div>
 
-        <div id="listaModal" class="modal">
-            <div class="modal-content">
-                <h2 class="modal-title">Lista de Participantes</h2>
-                <ul id="listaNomes" class="modal-list"></ul>
-            </div>
+    <!-- Modal para Exibir os Resultados do Sorteio -->
+    <div id="modal-sortear" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">🎉 Resultados do Sorteio</h2>
+            <ul id="modal-resultados" class="modal-list"></ul>>
+    </div>
+    </div>
+
+    <!-- Modal para Exibir a Lista de Participantes -->
+    <div id="listaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="modal-title">Lista de Participantes</h2>
+            <ul id="listaNomes" class="modal-list"></ul>
         </div>
+    </div>
 
     <footer class="footer">
         <p>Desenvolvido por <a href="https://github.com/devbernardes" target="_blank">@devbernardes</a></p>
     </footer>
 
     <script src="app.js" defer></script>
-
     <audio id="present-sound" src="assets/som-presente.mp3"></audio>
 </body>
 </html>
