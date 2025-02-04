@@ -73,6 +73,7 @@
     100% { transform: rotate(0deg); }
 }
 
+/* Ajuste a animação do botão */
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -394,11 +395,51 @@ body {
     font-size: 20px;
     font-weight: bold; /* Negrito */
     color: white;
+    animation: none;
 }
 
+.button-draw.efeto-pulsar {
+    animation: pulse 1.5s infinite;
+}
 .button-draw img {
     margin-right: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Novo estilo para o texto do botão */
+.button-draw .button-text {
+    position: static;
+    transform: none;
+    margin-left: 10px;
+}
+
+/* Ajuste do container do botão */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#resetarSorteio {
+    margin-top: -50px;
+    position: absolute;  /* Tornar o botão posicionado */
+    top: 270px;  /* Ajuste para sua necessidade */
+    left: 47.0%;  /* Ajusta para o centro */
+    transform: translateX(-50%);  /* Centraliza o botão */
+    display: block;  /* Torna o botão visível */
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto; /* Garante que não está bloqueado */
+    z-index: 1; /* Coloca acima de outros elementos */
+}
+
+#resetarSorteio:hover {
+    color: var(--color-button);
+    text-decoration: underline;
 }
 
 .button-draw:hover {

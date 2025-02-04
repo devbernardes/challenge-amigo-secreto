@@ -1,5 +1,46 @@
 // Variáveis globais
 let scrollPosicao = 0;
+let usuarioAtual = '';
+let sorteioRealizado = false;
+
+// Substitua todos os alerts por esta função personalizada
+// Função personalizada para substituir os alerts nativos
+function customAlert(message) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        z-index: 10000;
+        text-align: center;
+    `;
+
+    const text = document.createElement('p');
+    text.textContent = message;
+    modal.appendChild(text);
+
+    const button = document.createElement('button');
+    button.textContent = 'OK';
+    button.style.cssText = `
+        margin-top: 15px;
+        padding: 8px 20px;
+        cursor: pointer;
+        background: #4B69FD;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    `;
+
+    button.onclick = () => document.body.removeChild(modal);
+    modal.appendChild(button);
+    document.body.appendChild(modal);
+    button.focus();
+}
 
 // 🎭 Animação do botão "Sortear"
 document.addEventListener('DOMContentLoaded', function () {
@@ -71,8 +112,6 @@ buttonAdd.addEventListener('click', () => {
     } else {
         handleValidInput(inputValue);
         inputName.value = "";
-        clickSound.currentTime = 0;
-        setTimeout(() => clickSound.play(), 50);
     }
 });
 
@@ -91,12 +130,22 @@ function handleInvalidInput() {
 
 // ✅ Input válido
 function handleValidInput(name) {
+    // Verifica se o nome já existe na lista
+    if (listaDeAmigos.some(nome => nome.toLowerCase() === name.toLowerCase())) {
+        customAlert("⚠️ Este nome já foi adicionado à lista!");
+        return;  // Não adiciona o nome se ele já estiver na lista
+
+    }
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
     buttonAdd.classList.add('valid');
     listaDeAmigos.push(name);
     animateTextEntry(name);
+
+    // Só toca o som se o nome foi adicionado à lista (não duplicado)
+    clickSound.currentTime = 0;
+    setTimeout(() => clickSound.play(), 50);
 }
 
 // 🔄 Restaura estado do input
@@ -174,14 +223,13 @@ document.getElementById('mostrarLista').addEventListener('click', (e) => {
 
 // 🎲 Função de Sorteio
 function sortearAmigos() {
-    if (listaDeAmigos.length < 2) {
-        alert("❄️ Precisa de pelo menos 2 participantes!");
-        return;
-    }
+    // Limpa qualquer listener residual clonando o botão
+    const oldButton = document.getElementById('botaoSortear');
+    const newButton = oldButton.cloneNode(true);
+    oldButton.replaceWith(newButton);
 
-    const uniqueNames = new Set(listaDeAmigos);
-    if (uniqueNames.size !== listaDeAmigos.length) {
-        alert("⚠️ Nomes repetidos encontrados!");
+    if (listaDeAmigos.length < 2) {
+        customAlert("❄️ Precisa de pelo menos 2 participantes!");
         return;
     }
 
@@ -195,9 +243,103 @@ function sortearAmigos() {
         amigoSecreto: shuffled[(index + 1) % shuffled.length]
     }));
 
-    mostrarResultadoSorteio();
-    abrirModal('modal-identificacao');
+    sorteioRealizado = true; // 👈 Novo estado
+
+    // Alerta e armazenamento
+    customAlert("🎉 Sorteio realizado com sucesso!");
+    sessionStorage.setItem('sorteioAtual', JSON.stringify(sorteados));
+
+    // Atualiza a interface
+    const botaoSortear = document.getElementById('botaoSortear');
+    document.querySelector('.button-text').textContent = 'Ver resultado do sorteio';
+    botaoSortear.classList.add('efeto-pulsar');
+    document.getElementById('resetarSorteio').classList.remove('hidden');
+
+    // 🔥 Atualização crucial do listener aqui 🔥
+    botaoSortear.onclick = () => abrirModal('modal-identificacao');
 }
+
+// Função para resetar o sorteio
+async function resetarSorteio() {
+    const confirmado = await customConfirm("⚠️ Tem certeza que deseja realizar um novo sorteio?");
+    if (confirmado) {
+        //Reinicialização completa
+        document.getElementById('botaoSortear').onclick = sortearAmigos; // Reset crucial
+        document.querySelector('.button-text').textContent = 'Sortear amigo';
+
+        // Limpeza de estado
+        sorteioRealizado = false;
+        sorteados = [];
+        listaDeAmigos = [];
+
+        // Atualizações visuais
+        document.querySelectorAll('.name-list').forEach(lista => lista.innerHTML = '');
+        sessionStorage.removeItem('sorteioAtual');
+    }
+    return false;
+}
+
+// Função auxiliar para confirmação personalizada
+function customConfirm(message) {
+    return new Promise(resolve => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10000;
+            text-align: center;
+        `;
+
+        const text = document.createElement('p');
+        text.textContent = message;
+        modal.appendChild(text);
+
+        const btnContainer = document.createElement('div');
+        btnContainer.style.marginTop = '15px';
+
+        const simBtn = document.createElement('button');
+        simBtn.textContent = 'Sim';
+        simBtn.onclick = () => {
+            document.body.removeChild(modal);
+            resolve(true);
+        };
+
+        const naoBtn = document.createElement('button');
+        naoBtn.textContent = 'Não';
+        naoBtn.onclick = () => {
+            document.body.removeChild(modal);
+            resolve(false);
+        };
+
+        // Estilização comum para os botões
+        [simBtn, naoBtn].forEach(btn => {
+            btn.style.cssText = `
+                padding: 8px 20px;
+                margin: 0 5px;
+                cursor: pointer;
+                border: none;
+                border-radius: 5px;
+            `;
+        });
+
+        simBtn.style.background = '#4CAF50';
+        simBtn.style.color = 'white';
+        naoBtn.style.background = '#f44336';
+        naoBtn.style.color = 'white';
+
+        btnContainer.appendChild(simBtn);
+        btnContainer.appendChild(naoBtn);
+        modal.appendChild(btnContainer);
+        document.body.appendChild(modal);
+    });
+}
+
 
 // Funções auxiliares do sorteio
 function validarSorteio(shuffled) {
@@ -220,17 +362,18 @@ function mostrarResultadoSorteio() {
     lista.innerHTML = '';
 
     sorteados.forEach((item) => {
+        const isUsuarioAtual = item.nome.toLowerCase() === usuarioAtual.toLowerCase();
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="participante">
                 <span>${item.nome}</span>
-                <button class="eye-button" data-nome="${item.nome}">
-                    <i class="fas fa-eye"></i>
+                <button class="eye-button ${isUsuarioAtual ? '' : 'bloqueado'}" 
+                    onclick="${isUsuarioAtual ? `toggleAmigo('${item.nome}', event)` : ''}"
+                    ${!isUsuarioAtual ? 'disabled' : ''}>
+                    <i class="fas ${isUsuarioAtual ? 'fa-eye' : 'fa-lock'}"></i>
                 </button>
             </div>
-            <div id="reveal-${item.nome}" class="revealed-name hidden">
-                ${item.amigoSecreto}
-            </div>
+            <div id="reveal-${item.nome}" class="revealed-name hidden"></div>
         `;
         lista.appendChild(li);
     });
@@ -250,7 +393,7 @@ function toggleAmigo(nome, event) {
     if (!isHidden) {
         const resultado = sorteados.find(item => item.nome === nome);
         elemento.textContent = resultado.amigoSecreto;
-        
+
         // Animação não interfere no clique
         elemento.animate([
             { opacity: 0 },
@@ -343,26 +486,22 @@ function removerNome(nome) {
 }
 
 function verificarIdentificacao() {
-    const nomeDigitado = document.getElementById('input-identificacao').value.trim();
-    const nomeNormalizado = nomeDigitado.toLowerCase();
-
-    // Verificar se existe na lista (case-insensitive)
-    const usuarioEncontrado = listaDeAmigos.find(nome =>
-        nome.toLowerCase() === nomeNormalizado
-    );
-
-    // Se NÃO encontrou o usuário
-    if (!usuarioEncontrado) {
-        alert("🚫 Nome não está na lista de participantes!");
-        document.getElementById('input-identificacao').value = ""; // Limpa o campo
-        return; // 👈 Impede totalmente a execução
+    if (sorteados.length === 0) { // Nova verificação
+        customAlert("⚠️ Nenhum sorteio foi realizado ainda!");
+        return;
     }
 
-    // Se passou da validação (nome existe)
-    usuarioAtual = usuarioEncontrado; // Mantém a grafia original
+    const nomeDigitado = document.getElementById('input-identificacao').value.trim();
+
+    if (!listaDeAmigos.find(nome => nome.toLowerCase() === nomeDigitado.toLowerCase())) {
+        customAlert('❌ Seu nome não está na lista de participantes!');
+        return;
+    }
+
+    usuarioAtual = nomeDigitado;
     fecharModal('modal-identificacao');
     abrirModal('modal-sortear');
-    iniciarRevelacaoTemporaria();
+    mostrarResultadoSorteio(); // Chama depois de definir usuarioAtual
 }
 
 function iniciarRevelacaoTemporaria() {
@@ -389,3 +528,26 @@ function iniciarRevelacaoTemporaria() {
         icon.classList.replace('fa-eye-slash', 'fa-eye');
     }, 5000);
 }
+
+document.getElementById('resetarSorteio').addEventListener('click', async (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation(); // Impede múltiplos handlers
+    await resetarSorteio();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Verifica se há sorteio armazenado
+    const sorteioSalvo = sessionStorage.getItem('sorteioAtual');
+
+    if (sorteioSalvo) {
+        sorteados = JSON.parse(sorteioSalvo);
+        sorteioRealizado = true; // 👈 Mantém estado correto
+    }
+
+    // Configura o botão inicial
+    const botaoSortear = document.getElementById('botaoSortear');
+    botaoSortear.onclick = sortearAmigos;
+    botaoSortear.classList.remove('efeto-pulsar');
+    document.querySelector('.button-text').textContent = 'Sortear amigo';
+    document.getElementById('resetarSorteio').classList.remove('hidden');
+});

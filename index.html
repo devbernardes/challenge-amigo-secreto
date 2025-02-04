@@ -41,11 +41,12 @@
 
             <div class="button-container">
                 <div class="button-wrapper">
-                    <button class="button-draw" onclick="sortearAmigos()" aria-label="Sortear amigo secreto">
+                    <button class="button-draw" onclick="sortearAmigos()" aria-label="Sortear amigo secreto" id="botaoSortear">
                         <div id="play-animation" class="lottie-play-icon"></div>
-                        Sortear amigo
+                        <span class="button-text">Sortear amigo</span>
                     </button>
                 </div>
+                <a href="#" id="resetarSorteio" class="ver-lista-link hidden">Realizar novo sorteio</a>
             </div>
         </section>
     </main>
@@ -67,6 +68,16 @@
             <span class="close-modal">&times;</span>
             <h2 class="modal-title">Lista de Participantes</h2>
             <ul id="listaNomes" class="modal-list"></ul>
+        </div>
+    </div>
+
+    <!-- Modal para o resultado do sorteio -->
+    <div id="resultadoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Resultado do Sorteio</h2>
+            <ul id="modal-resultados"></ul>
+            <button id="fecharResultado" class="button">Fechar Resultado</button>
         </div>
     </div>
 
