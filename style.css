@@ -803,7 +803,7 @@ body.modal-aberto::before {
 .btn-identificacao {
     background: #4B69FD;
     color: white;
-    padding: 12px 30px;
+    padding: 5px 20px;
     border: none;
     border-radius: 25px;
     cursor: pointer;
@@ -813,4 +813,96 @@ body.modal-aberto::before {
 .btn-identificacao:hover {
     background: #3a4fc7;
     transform: scale(1.05);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.btn-cancelar {
+    background: #f44336 !important;
+    color: white !important;
+    padding: 5px 20px !important;
+    border: none !important;
+    border-radius: 25px !important;
+    cursor: pointer !important;
+    transition: all 0.3s !important;
+}
+
+.btn-cancelar:hover {
+    background: #d32f2f !important;
+    transform: scale(1.05) !important;
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #ff0000;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s;
+    z-index: 2;
+}
+
+.close-modal:hover {
+    transform: rotate(90deg) scale(1.2);
+    color: #cc0000;
+}
+
+/* Estilos do Modal de Regras */
+.regras-content {
+    max-width: 800px;
+    padding: 30px;
+    position: relative;
+    top: 100px;
+    left: 390px;
+}
+
+.regras-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin: 25px 0;
+}
+
+.regra-item {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid var(--color-primary);
+    text-align: left;
+}
+
+.regra-item.destaque {
+    background: #fff;
+    border-color: #4B69FD;
+    box-shadow: 0 4px 12px rgba(75, 105, 253, 0.2);
+}
+
+.icone-regra {
+    font-size: 28px;
+    color: var(--color-primary);
+    margin-bottom: 15px;
+}
+
+.regra-item h3 {
+    color: var(--color-primary);
+    margin: 10px 0 15px;
+    font-family: 'Merriweather', serif;
+}
+
+.regra-item p {
+    line-height: 1.8;
+    color: var(--color-text);
+    font-size: 15px;
+    margin-left: 10px;
+}
+
+.regra-item li {
+    margin-bottom: 8px;
 }

@@ -2,44 +2,112 @@
 let scrollPosicao = 0;
 let usuarioAtual = '';
 let sorteioRealizado = false;
+let senhaTemporaria = '';
+let senhasArmazenadas = JSON.parse(localStorage.getItem('senhasAmigos')) || {};
 
-// Substitua todos os alerts por esta função personalizada
 // Função personalizada para substituir os alerts nativos
-function customAlert(message) {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        z-index: 10000;
-        text-align: center;
-    `;
+function customAlert(message, isPassword = false) {
+    return new Promise(resolve => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px 20px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10000;
+            text-align: center;
+            min-width: 300px;
+        `;
 
-    const text = document.createElement('p');
-    text.textContent = message;
-    modal.appendChild(text);
+        // Ícone de fechar
+        const closeButton = document.createElement('span');
+        closeButton.innerHTML = '&times;';
+        closeButton.style.cssText = `
+            position: absolute;
+            right: 15px;
+            top: 0px;
+            font-size: 40px;
+            cursor: pointer;
+            color: #ff4444;
+            transition: all 0.3s;
+        `;
+        closeButton.onclick = () => {
+            document.body.removeChild(modal);
+            resolve(null); // Retorna null quando cancela
+        };
 
-    const button = document.createElement('button');
-    button.textContent = 'OK';
-    button.style.cssText = `
-        margin-top: 15px;
-        padding: 8px 20px;
-        cursor: pointer;
-        background: #4B69FD;
-        color: white;
-        border: none;
-        border-radius: 5px;
-    `;
+        modal.appendChild(closeButton);
 
-    button.onclick = () => document.body.removeChild(modal);
-    modal.appendChild(button);
-    document.body.appendChild(modal);
-    button.focus();
+        const text = document.createElement('p');
+        text.textContent = message;
+        text.style.marginBottom = '20px';
+        modal.appendChild(text);
+
+        if (isPassword) {
+            const input = document.createElement('input');
+            input.type = 'password';
+            input.maxLength = 4;
+            input.inputMode = 'numeric';
+            input.style.cssText = `
+                width: 80%;
+                margin: 0 auto 15px;
+                padding: 10px;
+                font-size: 20px;
+                text-align: center;
+                letter-spacing: 5px;
+                border: 2px solid #4B69FD;
+                border-radius: 8px;
+            `;
+
+            const button = document.createElement('button');
+            button.textContent = 'Salvar';
+            button.style.cssText = `
+                padding: 10px 25px;
+                background: #4B69FD;
+                color: white;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: transform 0.2s;
+            `;
+
+            button.onclick = () => {
+                if (input.value.length === 4) {
+                    document.body.removeChild(modal);
+                    resolve(input.value);
+                }
+            };
+
+            modal.appendChild(input);
+            modal.appendChild(button);
+            document.body.appendChild(modal);
+            input.focus();
+        } else {
+            const button = document.createElement('button');
+            button.textContent = 'OK';
+            button.style.cssText = `
+                padding: 10px 25px;
+                background: #4B69FD;
+                color: white;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+            `;
+
+            button.onclick = () => {
+                document.body.removeChild(modal);
+                resolve();
+            };
+
+            modal.appendChild(button);
+            document.body.appendChild(modal);
+            button.focus();
+        }
+    });
 }
 
 // 🎭 Animação do botão "Sortear"
@@ -134,14 +202,17 @@ function handleValidInput(name) {
     if (listaDeAmigos.some(nome => nome.toLowerCase() === name.toLowerCase())) {
         customAlert("⚠️ Este nome já foi adicionado à lista!");
         return;  // Não adiciona o nome se ele já estiver na lista
-
     }
+
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
     buttonAdd.classList.add('valid');
     listaDeAmigos.push(name);
     animateTextEntry(name);
+
+    // Salva a lista atualizada
+    salvarListaNoLocalStorage();
 
     // Só toca o som se o nome foi adicionado à lista (não duplicado)
     clickSound.currentTime = 0;
@@ -263,18 +334,29 @@ function sortearAmigos() {
 async function resetarSorteio() {
     const confirmado = await customConfirm("⚠️ Tem certeza que deseja realizar um novo sorteio?");
     if (confirmado) {
-        //Reinicialização completa
-        document.getElementById('botaoSortear').onclick = sortearAmigos; // Reset crucial
-        document.querySelector('.button-text').textContent = 'Sortear amigo';
+        // Limpa todas as senhas armazenadas
+        localStorage.removeItem('senhasAmigos');
+        localStorage.removeItem('listaDeAmigos'); // Limpa a lista de nomes
 
-        // Limpeza de estado
+
+        // Atualiza a variável global de senhas
+        senhasArmazenadas = {};
+
+        // Resto do código de reset...
+        document.getElementById('botaoSortear').onclick = sortearAmigos;
+        document.querySelector('.button-text').textContent = 'Sortear amigo';
         sorteioRealizado = false;
         sorteados = [];
         listaDeAmigos = [];
+        usuarioAtual = ''; // Limpa o usuário atual
 
-        // Atualizações visuais
         document.querySelectorAll('.name-list').forEach(lista => lista.innerHTML = '');
         sessionStorage.removeItem('sorteioAtual');
+
+        // Fecha todos os modais abertos
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
     }
     return false;
 }
@@ -362,19 +444,26 @@ function mostrarResultadoSorteio() {
     lista.innerHTML = '';
 
     sorteados.forEach((item) => {
+        // Garantir comparação case insensitive
         const isUsuarioAtual = item.nome.toLowerCase() === usuarioAtual.toLowerCase();
+
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="participante">
                 <span>${item.nome}</span>
                 <button class="eye-button ${isUsuarioAtual ? '' : 'bloqueado'}" 
-                    onclick="${isUsuarioAtual ? `toggleAmigo('${item.nome}', event)` : ''}"
                     ${!isUsuarioAtual ? 'disabled' : ''}>
                     <i class="fas ${isUsuarioAtual ? 'fa-eye' : 'fa-lock'}"></i>
                 </button>
             </div>
             <div id="reveal-${item.nome}" class="revealed-name hidden"></div>
         `;
+
+        // Adiciona o event listener corretamente
+        if (isUsuarioAtual) {
+            li.querySelector('button').addEventListener('click', (e) => toggleAmigo(item.nome, e));
+        }
+
         lista.appendChild(li);
     });
 }
@@ -407,12 +496,28 @@ function toggleAmigo(nome, event) {
 
 // 🖼️ Controle de Modais
 function abrirModal(modalId) {
+    // Fecha todos os modais primeiro
     document.querySelectorAll('.modal').forEach(modal => {
         modal.style.display = 'none';
     });
+
+    // Configurações específicas
+    if (modalId === 'modal-regras') {
+        document.body.style.overflow = 'hidden'; // Trava o scroll
+    }
+
+    // Apenas resetar o modal de identificação se for uma nova consulta
+    if (modalId === 'modal-identificacao') {
+        document.getElementById('modal-titulo').textContent = '🔒 Identifique-se'
+        resetarModalIdentificacao();
+    }
+
+    // Configurações comuns
     scrollPosicao = window.pageYOffset;
     document.body.classList.add('modal-aberto');
     document.body.style.top = `-${scrollPosicao}px`;
+
+    // Exibe o modal solicitado
     const modal = document.getElementById(modalId);
     modal.style.display = 'block';
     modal.focus();
@@ -421,9 +526,23 @@ function abrirModal(modalId) {
 function fecharModal(modalId) {
     document.body.classList.remove('modal-aberto');
     const modal = document.getElementById(modalId);
-    modal.style.display = 'none'; // 👈 Garanta que está ocultando
-    window.scrollTo(0, scrollPosicao);
+    modal.style.display = 'none';
+
+    // Restaura a posição de scroll apenas se não for o modal de resultados
+    if (modalId !== 'modal-sortear') {
+        window.scrollTo(0, scrollPosicao);
+    }
     document.body.style.top = '';
+}
+
+// Nova função para resetar estado do modal de identificação
+function resetarModalIdentificacao() {
+    usuarioAtual = ''; // Só reseta se for uma nova consulta
+    document.getElementById('etapa-nome').style.display = 'block';
+    document.getElementById('etapa-senha').style.display = 'none';
+    document.getElementById('input-identificacao').value = '';
+    document.getElementById('input-senha').value = '';
+    document.getElementById('modal-titulo').textContent = '🔒 Identifique-se';
 }
 
 // Event Listeners para modais
@@ -448,6 +567,21 @@ document.addEventListener('keydown', (e) => {
         });
     }
 });
+
+function fecharModalCompleto() {
+    // Reseta todas as variáveis temporárias
+    usuarioAtual = '';
+    senhaTemporaria = '';
+
+    // Reseta os campos e etapas
+    document.getElementById('etapa-nome').style.display = 'block';
+    document.getElementById('etapa-senha').style.display = 'none';
+    document.getElementById('input-identificacao').value = '';
+    document.getElementById('input-senha').value = '';
+
+    // Fecha o modal
+    fecharModal('modal-identificacao');
+}
 
 // 🗑️ Atualização da lista
 function atualizarListaModal() {
@@ -485,23 +619,70 @@ function removerNome(nome) {
     }
 }
 
-function verificarIdentificacao() {
-    if (sorteados.length === 0) { // Nova verificação
-        customAlert("⚠️ Nenhum sorteio foi realizado ainda!");
+function verificarNome() {
+    const nomeDigitado = document.getElementById('input-identificacao').value.trim();
+
+    if (!nomeDigitado) {
+        customAlert("❌ Por favor, digite seu nome!");
         return;
     }
 
-    const nomeDigitado = document.getElementById('input-identificacao').value.trim();
+    // Verifica na lista de participantes
+    const nomeExiste = listaDeAmigos.some(nome => 
+        nome.toLowerCase() === nomeDigitado.toLowerCase()
+    );
 
-    if (!listaDeAmigos.find(nome => nome.toLowerCase() === nomeDigitado.toLowerCase())) {
+    if (!nomeExiste) {
         customAlert('❌ Seu nome não está na lista de participantes!');
         return;
     }
 
-    usuarioAtual = nomeDigitado;
+    usuarioAtual = nomeDigitado.toLowerCase();
+
+    if (senhasArmazenadas[usuarioAtual]) {
+        document.getElementById('modal-titulo').textContent = '🔑 Coloque sua senha aqui';
+        document.getElementById('etapa-nome').style.display = 'none';
+        document.getElementById('etapa-senha').style.display = 'block';
+        document.getElementById('input-senha').focus();
+    } else {
+        document.getElementById('modal-titulo').textContent = '🔒 Identifique-se';
+        cadastrarNovaSenha();
+    }
+}
+
+function cadastrarNovaSenha() {
+    customAlert("🔐 Crie uma senha de 4 dígitos para proteger seu amigo secreto:", true).then((senha) => {
+        if (senha === null) {
+            // Usuário clicou no X
+            fecharModalCompleto();
+            return;
+        }
+
+        if (/^\d{4}$/.test(senha)) {
+            senhasArmazenadas[usuarioAtual] = senha;
+            localStorage.setItem('senhasAmigos', JSON.stringify(senhasArmazenadas));
+            abrirResultados();
+        } else {
+            customAlert("⚠️ A senha deve conter exatamente 4 dígitos numéricos!");
+        }
+    });
+}
+
+function verificarSenha() {
+    const senhaDigitada = document.getElementById('input-senha').value;
+
+    if (senhasArmazenadas[usuarioAtual] === senhaDigitada) {
+        abrirResultados();
+    } else {
+        customAlert("❌ Senha incorreta! Tente novamente.");
+        document.getElementById('input-senha').value = '';
+    }
+}
+
+function abrirResultados() {
     fecharModal('modal-identificacao');
     abrirModal('modal-sortear');
-    mostrarResultadoSorteio(); // Chama depois de definir usuarioAtual
+    mostrarResultadoSorteio();
 }
 
 function iniciarRevelacaoTemporaria() {
@@ -536,12 +717,15 @@ document.getElementById('resetarSorteio').addEventListener('click', async (e) =>
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Carrega a lista salva
+    carregarListaDoLocalStorage();
+    
     // Verifica se há sorteio armazenado
     const sorteioSalvo = sessionStorage.getItem('sorteioAtual');
 
     if (sorteioSalvo) {
         sorteados = JSON.parse(sorteioSalvo);
-        sorteioRealizado = true; // 👈 Mantém estado correto
+        // Apenas prepara os dados, mas não altera o botão ainda
     }
 
     // Configura o botão inicial
@@ -550,4 +734,22 @@ document.addEventListener('DOMContentLoaded', () => {
     botaoSortear.classList.remove('efeto-pulsar');
     document.querySelector('.button-text').textContent = 'Sortear amigo';
     document.getElementById('resetarSorteio').classList.remove('hidden');
+
+    // Mostra o modal de regras ao carregar
+    setTimeout(() => {
+        abrirModal('modal-regras');
+    }, 1000); // Delay para melhor experiência
 });
+
+function salvarListaNoLocalStorage() {
+    localStorage.setItem('listaDeAmigos', JSON.stringify(listaDeAmigos));
+}
+
+function carregarListaDoLocalStorage() {
+    const listaSalva = localStorage.getItem('listaDeAmigos');
+    if (listaSalva) {
+        listaDeAmigos = JSON.parse(listaSalva);
+        // Atualiza a interface se necessário
+        atualizarListaModal();
+    }
+}

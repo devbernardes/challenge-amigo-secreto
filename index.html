@@ -53,6 +53,50 @@
 
     <div class="snow-container"></div>
 
+    <!-- Modal de Regras -->
+<div id="modal-regras" class="modal">
+    <div class="modal-content regras-content">
+        <span class="close-modal" onclick="fecharModal('modal-regras')">&times;</span>
+        <h2 class="modal-title">🎅 Regras do Amigo Secreto Digital</h2>
+        
+        <div class="regras-container">
+            <div class="regra-item">
+                <i class="fas fa-users icone-regra"></i>
+                <h3>Como Jogar:</h3>
+                <p>1. Adicione os nomes de todos os participantes<br>
+                2. Clique em "Sortear" para gerar os pares secretos<br>
+                3. Cada pessoa verá apenas quem sorteou</p>
+            </div>
+
+            <div class="regra-item destaque">
+                <i class="fas fa-shield-alt icone-regra"></i>
+                <h3>Sistema de Segurança:</h3>
+                <p>• Senha de 4 dígitos obrigatória<br>
+                • Só o dono do nome pode ver seu par<br>
+                • Dados criptografados localmente</p>
+            </div>
+
+            <div class="regra-item">
+                <i class="fas fa-sync-alt icone-regra"></i>
+                <h3>Recarregar Página:</h3>
+                <p>✓ Nomes são mantidos<br>
+                ✓ Sorteio precisa ser refeito<br>
+                ✓ Senhas são preservadas</p>
+            </div>
+
+            <div class="regra-item destaque">
+                <i class="fas fa-exclamation-triangle icone-regra"></i>
+                <h3>Importante:</h3>
+                <p>• Não atualize após o sorteio!<br>
+                • Novo sorteio apaga tudo<br>
+                • Mantenha sua senha em segredo</p>
+            </div>
+        </div>
+
+        <button class="btn-identificacao" onclick="fecharModal('modal-regras')">Entendi, vamos começar!</button>
+    </div>
+</div>
+
     <!-- Modal para Exibir os Resultados do Sorteio -->
     <div id="modal-sortear" class="modal">
         <div class="modal-content">
@@ -84,10 +128,23 @@
     <!-- Adicionar novos modais -->
     <div id="modal-identificacao" class="modal">
     <div class="modal-content identificacao-content">
-        <span class="close-modal">&times;</span>
-        <h2 class="modal-title">🔒 Coloque seu nome aqui</h2>
-        <input type="text" id="input-identificacao" placeholder="Digite seu nome">
-        <button type="button" class="btn-identificacao" onclick="verificarIdentificacao()">Continuar</button>
+         <span class="close-modal" onclick="fecharModalCompleto()">&times;</span>
+
+         <!-- Título dinâmico -->
+         <h2 id="modal-titulo" class="modal-title"></h2>
+
+        <div id="etapa-nome">
+            <input type="text" id="input-identificacao" placeholder="Digite seu nome">
+            <button type="button" class="btn-identificacao" onclick="verificarNome()">Continuar</button>
+        </div>
+
+        <!-- Etapa da senha -->
+    <div id="etapa-senha" style="display: none;">
+        <input type="password" id="input-senha" placeholder="Digite sua senha de 4 dígitos" maxlength="4" inputmode="numeric">
+        <button type="button" class="btn-identificacao" onclick="verificarSenha()">Acessar</button>
+        <button type="button" class="btn-cancelar" onclick="voltarParaNome()">Voltar</button>
+            </div>
+        </div>
     </div>
 </div>
 
