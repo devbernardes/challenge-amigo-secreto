@@ -102,6 +102,8 @@
 }
 
 @media (max-width: 768px) {
+
+
     .custom-title {
         max-width: 300px; /* Reduz o tamanho do título em telas menores */
     }
