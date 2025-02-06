@@ -14,9 +14,17 @@ const soundIcon = document.getElementById('sound-icon');
 // Configura o volume inicial da música
 backgroundMusic.volume = volumeSlider.value;
 
+// Atualiza o gradiente do slider baseado no valor
+function updateSliderGradient(value) {
+    const percentage = value * 100;
+    volumeSlider.style.setProperty('--volume-percentage', `${percentage}%`);
+}
+
 // Evento de mudança de volume no slider
 volumeSlider.addEventListener('input', () => {
     backgroundMusic.volume = volumeSlider.value;
+    updateSliderGradient(volumeSlider.value);
+
     if (volumeSlider.value == 0) {
         soundIcon.classList.remove('fa-volume-up', 'fa-volume-down');
         soundIcon.classList.add('fa-volume-mute');
@@ -29,18 +37,24 @@ volumeSlider.addEventListener('input', () => {
     }
 });
 
+// Inicializa o gradiente com o valor atual
+updateSliderGradient(volumeSlider.value);
+
 // Evento de clique no ícone de som para alternar o mudo
 soundIcon.addEventListener('click', () => {
     if (backgroundMusic.volume === 0) {
         backgroundMusic.volume = 1;
         volumeSlider.value = 1;
+        updateSliderGradient(1);
         soundIcon.classList.remove('fa-volume-mute');
         soundIcon.classList.add('fa-volume-up');
     } else {
         backgroundMusic.volume = 0;
         volumeSlider.value = 0;
+        updateSliderGradient(0);
         soundIcon.classList.remove('fa-volume-up', 'fa-volume-down');
         soundIcon.classList.add('fa-volume-mute');
+
     }
 });
 
