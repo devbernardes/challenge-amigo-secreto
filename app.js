@@ -4,6 +4,148 @@ let usuarioAtual = '';
 let sorteioRealizado = false;
 let senhaTemporaria = '';
 let senhasArmazenadas = JSON.parse(localStorage.getItem('senhasAmigos')) || {};
+let isSalaCompartilhada = false; 
+
+// Variáveis para controle de volume
+const volumeSlider = document.getElementById('volume-slider');
+const backgroundMusic = document.getElementById('background-music');
+const soundIcon = document.getElementById('sound-icon');
+
+// Configura o volume inicial da música
+backgroundMusic.volume = volumeSlider.value;
+
+// Evento de mudança de volume no slider
+volumeSlider.addEventListener('input', () => {
+    backgroundMusic.volume = volumeSlider.value;
+    if (volumeSlider.value == 0) {
+        soundIcon.classList.remove('fa-volume-up', 'fa-volume-down');
+        soundIcon.classList.add('fa-volume-mute');
+    } else if (volumeSlider.value < 0.5) {
+        soundIcon.classList.remove('fa-volume-up', 'fa-volume-mute');
+        soundIcon.classList.add('fa-volume-down');
+    } else {
+        soundIcon.classList.remove('fa-volume-down', 'fa-volume-mute');
+        soundIcon.classList.add('fa-volume-up');
+    }
+});
+
+// Evento de clique no ícone de som para alternar o mudo
+soundIcon.addEventListener('click', () => {
+    if (backgroundMusic.volume === 0) {
+        backgroundMusic.volume = 1;
+        volumeSlider.value = 1;
+        soundIcon.classList.remove('fa-volume-mute');
+        soundIcon.classList.add('fa-volume-up');
+    } else {
+        backgroundMusic.volume = 0;
+        volumeSlider.value = 0;
+        soundIcon.classList.remove('fa-volume-up', 'fa-volume-down');
+        soundIcon.classList.add('fa-volume-mute');
+    }
+});
+
+// Função para abrir o modal de "Criar Sala"
+document.getElementById('create-room-btn').addEventListener('click', () => {
+    abrirModal('create-room-modal');
+});
+
+// Função para abrir o modal
+function abrirModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+}
+
+// Função para fechar o modal
+function fecharModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+}
+
+// Função para alternar visibilidade da senha
+function togglePasswordVisibility(inputId, icon) {
+    const passwordInput = document.getElementById(inputId);
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        passwordInput.type = "password";
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+// Função para criar a sala e gerar um link único
+function createRoom() {
+    const password = document.getElementById('create-room-password').value;
+    if (!password) {
+        customAlert('Por favor, defina uma senha para a sala!');
+        return;
+    }
+
+    const roomId = generateRoomId();
+    const roomData = {
+        password: password,
+        participants: listaDeAmigos,
+        secretFriends: sorteados
+    };
+
+    localStorage.setItem(roomId, JSON.stringify(roomData));
+    const roomLink = `${window.location.href.split('?')[0]}?room=${roomId}`;
+
+    customAlert(`🎉 Sala criada com sucesso! Compartilhe este link:\n\n${roomLink}\n\nCopie e envie para os participantes!`);
+    fecharModal('create-room-modal');
+}
+
+// Função para gerar ID de sala única (aleatória)
+function generateRoomId() {
+    return Math.random().toString(36).substring(2, 9);
+}
+
+// Função para verificar o link da sala e senha
+function joinRoom() {
+    const botaoSortear = document.getElementById('botaoSortear');
+    document.querySelector('.button-text').textContent = 'Ver resultado do sorteio';
+    botaoSortear.onclick = () => abrirModal('modal-identificacao');
+    botaoSortear.classList.add('efeto-pulsar');
+    document.getElementById('resetarSorteio').classList.add('hidden');
+
+    const roomId = getRoomIdFromUrl();
+    const password = document.getElementById('join-room-password').value;
+    if (!roomId || !password) {
+        alert('Por favor, insira o código da sala e a senha!');
+        return;
+    }
+    const roomData = getRoomDataFromStorage(roomId);
+    if (!roomData) {
+        alert('Sala não encontrada!');
+        return;
+    }
+    if (roomData.password !== password) {
+        alert('Senha incorreta!');
+        return;
+    }
+    showStepByStep(roomData);
+}
+
+// Função para pegar a ID da sala da URL
+function getRoomIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('room');
+}
+
+// Função para pegar os dados da sala do localStorage
+function getRoomDataFromStorage(roomId) {
+    const roomData = localStorage.getItem(roomId);
+    return roomData ? JSON.parse(roomData) : null;
+}
+
+// Função para mostrar o passo a passo para o participante
+function showStepByStep(roomData) {
+    listaDeAmigos = roomData.participants;
+    sorteados = roomData.secretFriends;
+
+    salvarListaNoLocalStorage();
+    fecharModal('join-room-modal');
+}
 
 // Função personalizada para substituir os alerts nativos
 function customAlert(message, isPassword = false) {
@@ -18,35 +160,30 @@ function customAlert(message, isPassword = false) {
             padding: 40px 20px 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            z-index: 10000;
+            z-index: 100000;
             text-align: center;
             min-width: 300px;
         `;
-
-        // Ícone de fechar
         const closeButton = document.createElement('span');
-        closeButton.innerHTML = '&times;';
+        closeButton.innerHTML = '×';
         closeButton.style.cssText = `
             position: absolute;
             right: 15px;
-            top: 0px;
+            top: -10px;
             font-size: 40px;
             cursor: pointer;
-            color: #ff4444;
+            color:rgb(255, 0, 0);
             transition: all 0.3s;
         `;
         closeButton.onclick = () => {
             document.body.removeChild(modal);
-            resolve(null); // Retorna null quando cancela
+            resolve(null);
         };
-
         modal.appendChild(closeButton);
-
         const text = document.createElement('p');
         text.textContent = message;
         text.style.marginBottom = '20px';
         modal.appendChild(text);
-
         if (isPassword) {
             const input = document.createElement('input');
             input.type = 'password';
@@ -62,7 +199,6 @@ function customAlert(message, isPassword = false) {
                 border: 2px solid #4B69FD;
                 border-radius: 8px;
             `;
-
             const button = document.createElement('button');
             button.textContent = 'Salvar';
             button.style.cssText = `
@@ -74,14 +210,12 @@ function customAlert(message, isPassword = false) {
                 cursor: pointer;
                 transition: transform 0.2s;
             `;
-
             button.onclick = () => {
                 if (input.value.length === 4) {
                     document.body.removeChild(modal);
                     resolve(input.value);
                 }
             };
-
             modal.appendChild(input);
             modal.appendChild(button);
             document.body.appendChild(modal);
@@ -97,12 +231,10 @@ function customAlert(message, isPassword = false) {
                 border-radius: 25px;
                 cursor: pointer;
             `;
-
             button.onclick = () => {
                 document.body.removeChild(modal);
                 resolve();
             };
-
             modal.appendChild(button);
             document.body.appendChild(modal);
             button.focus();
@@ -110,7 +242,7 @@ function customAlert(message, isPassword = false) {
     });
 }
 
-// 🎭 Animação do botão "Sortear"
+// Animação do botão "Sortear"
 document.addEventListener('DOMContentLoaded', function () {
     lottie.loadAnimation({
         container: document.getElementById("play-animation"),
@@ -122,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// 🎁 Animação do presente
+// Animação do presente
 const presentAnimation = lottie.loadAnimation({
     container: document.getElementById('lottie-container'),
     renderer: 'svg',
@@ -131,7 +263,7 @@ const presentAnimation = lottie.loadAnimation({
     path: 'assets/animacao.json'
 });
 
-// 🎅 Animação do Papai Noel
+// Animação do Papai Noel
 document.addEventListener('DOMContentLoaded', function () {
     lottie.loadAnimation({
         container: document.getElementById('santa'),
@@ -142,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// ❄️ Efeito de neve
+// Efeito de neve
 document.addEventListener('DOMContentLoaded', function () {
     setInterval(() => {
         const snowflake = document.createElement('div');
@@ -155,14 +287,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 200);
 });
 
-// 📌 Referências dos elementos
+// Referências dos elementos
 const inputName = document.getElementById('amigo');
 const buttonAdd = document.querySelector('.button-add');
 const originalPlaceholder = inputName.placeholder;
 let listaDeAmigos = [];
 let sorteados = [];
 
-// 🎁 Som do presente
+// Som do presente
 const presentSound = new Audio('assets/som-presente.mp3');
 
 // Sons de interface
@@ -170,10 +302,9 @@ const clickSound = new Audio('assets/clique-adicionar.mp3');
 clickSound.volume = 0.2;
 const errorSound = new Audio('assets/som-erro.mp3');
 
-// ✅ Evento de clique no botão "Adicionar"
+// Evento de clique no botão "Adicionar"
 buttonAdd.addEventListener('click', () => {
     const inputValue = inputName.value.trim();
-
     if (inputValue === "") {
         handleInvalidInput();
         errorSound.play().catch(() => { });
@@ -183,10 +314,10 @@ buttonAdd.addEventListener('click', () => {
     }
 });
 
-// ✅ Restaura o estado original quando o input recebe foco
+// Restaura o estado original quando o input recebe foco
 inputName.addEventListener('focus', resetInputState);
 
-// 🚫 Input inválido
+// Input inválido
 function handleInvalidInput() {
     errorSound.play().catch(() => { });
     inputName.value = '';
@@ -196,37 +327,31 @@ function handleInvalidInput() {
     buttonAdd.classList.remove('valid');
 }
 
-// ✅ Input válido
+// Input válido
 function handleValidInput(name) {
-    // Verifica se o nome já existe na lista
     if (listaDeAmigos.some(nome => nome.toLowerCase() === name.toLowerCase())) {
         customAlert("⚠️ Este nome já foi adicionado à lista!");
-        return;  // Não adiciona o nome se ele já estiver na lista
+        return;
     }
-
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
     buttonAdd.classList.add('valid');
     listaDeAmigos.push(name);
     animateTextEntry(name);
-
-    // Salva a lista atualizada
     salvarListaNoLocalStorage();
-
-    // Só toca o som se o nome foi adicionado à lista (não duplicado)
     clickSound.currentTime = 0;
     setTimeout(() => clickSound.play(), 50);
 }
 
-// 🔄 Restaura estado do input
+// Restaura estado do input
 function resetInputState() {
     inputName.placeholder = originalPlaceholder;
     inputName.classList.remove('invalid');
     buttonAdd.classList.remove('invalid');
 }
 
-// ✅ Captura evento "Enter"
+// Captura evento "Enter"
 document.addEventListener('keydown', (event) => {
     if (event.key === "Enter" && document.activeElement === inputName) {
         event.preventDefault();
@@ -237,25 +362,21 @@ document.addEventListener('keydown', (event) => {
     }, 1150);
 });
 
-// 🏆 Animação do texto + presente
+// Animação do texto + presente
 function animateTextEntry(name) {
     const inputBox = inputName.getBoundingClientRect();
     const inputTextX = inputBox.left + inputBox.width / 2;
     const inputTextY = inputBox.top + inputBox.height / 2;
-
     let tempText = document.createElement('span');
     tempText.innerText = name;
     tempText.classList.add('moving-text');
-
     tempText.style.position = 'absolute';
     tempText.style.left = `${inputTextX}px`;
     tempText.style.top = `${inputTextY}px`;
     tempText.style.fontSize = '20px';
     tempText.style.fontWeight = 'bold';
     tempText.style.color = 'black';
-
     document.body.appendChild(tempText);
-
     tempText.animate([
         { transform: 'translate(-50%, 0)', opacity: 1 },
         { transform: `translate(-50%, -200px) scale(1.5)`, opacity: 1, offset: 0.7 },
@@ -264,46 +385,45 @@ function animateTextEntry(name) {
         duration: 2500,
         easing: 'ease-out'
     });
-
     setTimeout(() => {
         presentSound.currentTime = 0;
         presentSound.volume = 0.3;
         presentSound.play().catch(error => console.log('Autoplay bloqueado'));
         presentAnimation.goToAndPlay(0, true);
     }, 1800);
-
     setTimeout(() => {
         tempText.remove();
         presentAnimation.stop();
     }, 2500);
 }
 
-// 🌟 Efeito de clique do botão
+// Efeito de clique do botão
 buttonAdd.addEventListener('mouseup', () => {
     setTimeout(() => {
         buttonAdd.classList.remove('valid', 'invalid');
     }, 1000);
 });
 
-// 🗑️ Funcionalidades da lista
+// Funcionalidades da lista
 document.getElementById('mostrarLista').addEventListener('click', (e) => {
     e.preventDefault();
     abrirModal('listaModal');
     atualizarListaModal();
 });
 
-// 🎲 Função de Sorteio
+// Função de Sorteio
+// Função de Sorteio
 function sortearAmigos() {
-    // Limpa qualquer listener residual clonando o botão
-    const oldButton = document.getElementById('botaoSortear');
-    const newButton = oldButton.cloneNode(true);
-    oldButton.replaceWith(newButton);
+    // BLOQUEIA SORTEIO EM SALAS COMPARTILHADAS
+    if (isSalaCompartilhada) {
+        customAlert("⚠️ Ação bloqueada! Você está visualizando uma sala já sorteada.");
+        return;
+    }
 
     if (listaDeAmigos.length < 2) {
         customAlert("❄️ Precisa de pelo menos 2 participantes!");
         return;
     }
-
     let shuffled = [...listaDeAmigos];
     do {
         shuffled = shuffle([...listaDeAmigos]);
@@ -314,46 +434,60 @@ function sortearAmigos() {
         amigoSecreto: shuffled[(index + 1) % shuffled.length]
     }));
 
-    sorteioRealizado = true; // 👈 Novo estado
+    sorteioRealizado = true;
+    // Salva o estado do sorteio no localStorage ao invés do sessionStorage
+    localStorage.setItem('sorteioRealizado', 'true');
+    localStorage.setItem('sorteioAtual', JSON.stringify(sorteados));
+    localStorage.setItem('listaDeAmigos', JSON.stringify(listaDeAmigos));
+    localStorage.setItem('senhasAmigos', JSON.stringify(senhasArmazenadas));
 
-    // Alerta e armazenamento
     customAlert("🎉 Sorteio realizado com sucesso!");
-    sessionStorage.setItem('sorteioAtual', JSON.stringify(sorteados));
+    atualizarBotaoSorteio();
+}
 
-    // Atualiza a interface
+// Nova função para atualizar o estado do botão
+function atualizarBotaoSorteio() {
     const botaoSortear = document.getElementById('botaoSortear');
-    document.querySelector('.button-text').textContent = 'Ver resultado do sorteio';
-    botaoSortear.classList.add('efeto-pulsar');
-    document.getElementById('resetarSorteio').classList.remove('hidden');
+    const textoBotao = document.querySelector('.button-text');
 
-    // 🔥 Atualização crucial do listener aqui 🔥
-    botaoSortear.onclick = () => abrirModal('modal-identificacao');
+    if (localStorage.getItem('sorteioRealizado') === 'true' || isSalaCompartilhada) {
+        textoBotao.textContent = 'Ver resultado do sorteio';
+        botaoSortear.onclick = () => abrirModal('modal-identificacao');
+        botaoSortear.classList.add('efeto-pulsar');
+        document.getElementById('resetarSorteio').classList.remove('hidden');
+    } else {
+        textoBotao.textContent = 'Sortear amigo';
+        botaoSortear.onclick = sortearAmigos;
+        botaoSortear.classList.remove('efeto-pulsar');
+        document.getElementById('resetarSorteio').classList.add('hidden');
+    }
 }
 
 // Função para resetar o sorteio
 async function resetarSorteio() {
     const confirmado = await customConfirm("⚠️ Tem certeza que deseja realizar um novo sorteio?");
     if (confirmado) {
-        // Limpa todas as senhas armazenadas
+        // Limpar os dados do sorteio
         localStorage.removeItem('senhasAmigos');
-        localStorage.removeItem('listaDeAmigos'); // Limpa a lista de nomes
-
-
-        // Atualiza a variável global de senhas
+        localStorage.removeItem('listaDeAmigos');
+        localStorage.removeItem('sorteioRealizado');
+        localStorage.removeItem('sorteioAtual');
         senhasArmazenadas = {};
-
-        // Resto do código de reset...
-        document.getElementById('botaoSortear').onclick = sortearAmigos;
-        document.querySelector('.button-text').textContent = 'Sortear amigo';
-        sorteioRealizado = false;
-        sorteados = [];
         listaDeAmigos = [];
-        usuarioAtual = ''; // Limpa o usuário atual
+        sorteados = [];
+        sorteioRealizado = false;
+        usuarioAtual = '';
 
+        // Atualizar o estado do botão
+        atualizarBotaoSorteio();
+
+        // Ocultar o botão de resetar sorteio
+        document.getElementById('resetarSorteio').classList.add('hidden');
+
+        // Remover todos os resultados da interface
         document.querySelectorAll('.name-list').forEach(lista => lista.innerHTML = '');
-        sessionStorage.removeItem('sorteioAtual');
 
-        // Fecha todos os modais abertos
+        // Fechar os modais de sorteio, se abertos
         document.querySelectorAll('.modal').forEach(modal => {
             modal.style.display = 'none';
         });
@@ -361,7 +495,6 @@ async function resetarSorteio() {
     return false;
 }
 
-// Função auxiliar para confirmação personalizada
 function customConfirm(message) {
     return new Promise(resolve => {
         const modal = document.createElement('div');
@@ -377,7 +510,6 @@ function customConfirm(message) {
             z-index: 10000;
             text-align: center;
         `;
-
         const text = document.createElement('p');
         text.textContent = message;
         modal.appendChild(text);
@@ -417,8 +549,10 @@ function customConfirm(message) {
 
         btnContainer.appendChild(simBtn);
         btnContainer.appendChild(naoBtn);
-        modal.appendChild(btnContainer);
-        document.body.appendChild(modal);
+
+        modal.appendChild(btnContainer); 
+
+        document.body.appendChild(modal);  
     });
 }
 
@@ -442,6 +576,12 @@ function shuffle(array) {
 function mostrarResultadoSorteio() {
     const lista = document.getElementById('modal-resultados');
     lista.innerHTML = '';
+
+    // FORÇA A IDENTIFICAÇÃO EM SALAS COMPARTILHADAS
+    if (isSalaCompartilhada && !usuarioAtual) {
+        abrirModal('modal-identificacao');
+        return;
+    }
 
     sorteados.forEach((item) => {
         // Garantir comparação case insensitive
@@ -480,16 +620,32 @@ function toggleAmigo(nome, event) {
     icon.classList.toggle('fa-eye', isHidden);
 
     if (!isHidden) {
-        const resultado = sorteados.find(item => item.nome === nome);
-        elemento.textContent = resultado.amigoSecreto;
+        // Vamos verificar a estrutura dos dados
+        console.log('Nome procurado:', nome);
+        console.log('Lista de sorteados:', sorteados);
 
-        // Animação não interfere no clique
+        const resultado = sorteados.find(item => item.nome.toLowerCase() === nome.toLowerCase());
+        console.log('Resultado encontrado:', resultado);
+        elemento.textContent = resultado ? resultado.amigoSecreto : 'Não encontrado';
+
+        if (resultado) {
+            console.log('Amigo secreto:', resultado.amigoSecreto);
+            // Tenta acessar o nome do amigo secreto de diferentes formas
+            const amigoSecreto = typeof resultado.amigoSecreto === 'object' ?
+                resultado.amigoSecreto.nome || resultado.amigoSecreto.toString() :
+                resultado.amigoSecreto;
+
+            elemento.textContent = amigoSecreto;
+        } else {
+            elemento.textContent = 'Não encontrado';
+        }
+
         elemento.animate([
             { opacity: 0 },
             { opacity: 1 }
         ], {
             duration: 200,
-            fill: 'forwards' // Mantém o estado final
+            fill: 'forwards'
         });
     }
 }
@@ -500,6 +656,11 @@ function abrirModal(modalId) {
     document.querySelectorAll('.modal').forEach(modal => {
         modal.style.display = 'none';
     });
+
+    // Atualização especial para salas compartilhadas
+    if (isSalaCompartilhada && modalId === 'modal-sortear') {
+        mostrarResultadoSorteio();
+    }
 
     // Configurações específicas
     if (modalId === 'modal-regras') {
@@ -719,27 +880,72 @@ document.getElementById('resetarSorteio').addEventListener('click', async (e) =>
 document.addEventListener('DOMContentLoaded', () => {
     // Carrega a lista salva
     carregarListaDoLocalStorage();
-    
-    // Verifica se há sorteio armazenado
-    const sorteioSalvo = sessionStorage.getItem('sorteioAtual');
 
+    // Verifica se há sorteio armazenado
+    const sorteioSalvo = localStorage.getItem('sorteioAtual');
     if (sorteioSalvo) {
         sorteados = JSON.parse(sorteioSalvo);
-        // Apenas prepara os dados, mas não altera o botão ainda
+        sorteioRealizado = true;
     }
 
-    // Configura o botão inicial
-    const botaoSortear = document.getElementById('botaoSortear');
-    botaoSortear.onclick = sortearAmigos;
-    botaoSortear.classList.remove('efeto-pulsar');
-    document.querySelector('.button-text').textContent = 'Sortear amigo';
-    document.getElementById('resetarSorteio').classList.remove('hidden');
+    // Verifica se é uma sala compartilhada
+    const roomIdFromUrl = getRoomIdFromUrl();
+    if (roomIdFromUrl) {
+        isSalaCompartilhada = true;
 
-    // Mostra o modal de regras ao carregar
-    setTimeout(() => {
-        abrirModal('modal-regras');
-    }, 1000); // Delay para melhor experiência
-});
+        // Abre modal de senha automaticamente
+        abrirModal('join-room-modal');
+
+        // Bloqueia fechamento do modal
+        const closeButton = document.querySelector('#join-room-modal .close-modal');
+        closeButton.style.display = 'none';
+
+        // Configurações específicas para sala compartilhada
+        document.querySelector('.button-text').textContent = 'Ver resultado do sorteio';
+        botaoSortear.onclick = () => abrirModal('modal-identificacao');
+        botaoSortear.classList.add('efeto-pulsar');
+        document.getElementById('resetarSorteio').classList.add('hidden');
+
+        // Listener para verificação de senha
+        document.getElementById('submit-room-password').addEventListener('click', () => {
+            const password = document.getElementById('room-password-input').value;
+
+            if (!password) {
+                customAlert("❌ Por favor, digite a senha da sala!");
+                return;
+            }
+
+            // Busca dados da sala
+            const roomData = getRoomDataFromStorage(roomIdFromUrl);
+
+            if (!roomData) {
+                customAlert("❌ Sala não encontrada!");
+                return;
+            }
+
+            if (roomData.password !== password) {
+                customAlert("❌ Senha incorreta! Tente novamente.");
+                document.getElementById('room-password-input').value = ''; // Limpa o campo de senha
+                return;
+            }
+
+            // Carrega os dados da sala corretamente
+            listaDeAmigos = roomData.participants;
+            sorteados = roomData.secretFriends;
+
+            salvarListaNoLocalStorage();
+            fecharModal('join-room-modal');
+        });
+    } 
+
+    // Atualiza o estado do botão baseado no localStorage
+    atualizarBotaoSorteio();
+
+        // Mostra modal de regras após 1 segundo apenas se não houver sorteio realizado
+        if (!localStorage.getItem('sorteioRealizado') && !isSalaCompartilhada) {
+            setTimeout(() => abrirModal('modal-regras'), 1000);
+        }
+    });
 
 function salvarListaNoLocalStorage() {
     localStorage.setItem('listaDeAmigos', JSON.stringify(listaDeAmigos));
@@ -751,5 +957,5 @@ function carregarListaDoLocalStorage() {
         listaDeAmigos = JSON.parse(listaSalva);
         // Atualiza a interface se necessário
         atualizarListaModal();
-    }
+    }  
 }

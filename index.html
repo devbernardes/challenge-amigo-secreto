@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
     <title>Amigo Secreto</title>
 </head>
-
 <body>
     <main class="main-content">
         <header class="header-banner">
@@ -34,11 +33,9 @@
             </div>
             <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
             <ul id="resultado" class="result-list" aria-live="polite"></ul>
-
             <div class="ver-lista-container">
                 <a href="#" id="mostrarLista" class="ver-lista-link">Ver lista dos nomes</a>
             </div>
-
             <div class="button-container">
                 <div class="button-wrapper">
                     <button class="button-draw" onclick="sortearAmigos()" aria-label="Sortear amigo secreto" id="botaoSortear">
@@ -50,60 +47,100 @@
             </div>
         </section>
     </main>
-
     <div class="snow-container"></div>
 
-    <!-- Modal de Regras -->
-<div id="modal-regras" class="modal">
-    <div class="modal-content regras-content">
-        <span class="close-modal" onclick="fecharModal('modal-regras')">&times;</span>
-        <h2 class="modal-title">🎅 Regras do Amigo Secreto Digital</h2>
-        
-        <div class="regras-container">
-            <div class="regra-item">
-                <i class="fas fa-users icone-regra"></i>
-                <h3>Como Jogar:</h3>
-                <p>1. Adicione os nomes de todos os participantes<br>
-                2. Clique em "Sortear" para gerar os pares secretos<br>
-                3. Cada pessoa verá apenas quem sorteou</p>
-            </div>
+    <!-- Botão para abrir o modal -->
+    <div id="create-room-btn-container">
+        <button id="create-room-btn">Criar Sala</button>
+    </div>
 
-            <div class="regra-item destaque">
-                <i class="fas fa-shield-alt icone-regra"></i>
-                <h3>Sistema de Segurança:</h3>
-                <p>• Senha de 4 dígitos obrigatória<br>
-                • Só o dono do nome pode ver seu par<br>
-                • Dados criptografados localmente</p>
+    <!-- Modal de Criar Sala -->
+    <div id="create-room-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="fecharModal('create-room-modal')">&times;</span>
+            <h2>Criar Sala do Amigo Secreto</h2>
+            
+            <!-- Campo para a senha da sala -->
+            <label for="create-room-password">Defina uma Senha para a Sala:</label>
+            <div class="password-container">
+                <input type="password" id="create-room-password" placeholder="Senha para a sala" class="modal-input">
+                <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('create-room-password', this)"></i>
             </div>
+            
+            <button onclick="createRoom()">Criar Sala</button>
+        </div>
+    </div>
 
-            <div class="regra-item">
-                <i class="fas fa-sync-alt icone-regra"></i>
-                <h3>Recarregar Página:</h3>
-                <p>✓ Nomes são mantidos<br>
-                ✓ Sorteio precisa ser refeito<br>
-                ✓ Senhas são preservadas</p>
-            </div>
-
-            <div class="regra-item destaque">
-                <i class="fas fa-exclamation-triangle icone-regra"></i>
-                <h3>Importante:</h3>
-                <p>• Não atualize após o sorteio!<br>
-                • Novo sorteio apaga tudo<br>
-                • Mantenha sua senha em segredo</p>
+        <!-- Modal de Senha da Sala (Ajustado) -->
+        <div id="join-room-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>🔒 Insira a Senha da Sala</h2>
+                <p>Digite a senha para acessar a sala:</p>
+                <input type="password" id="room-password-input" placeholder="Senha da sala" maxlength="20" />
+                <button id="submit-room-password">Entrar</button>
             </div>
         </div>
 
-        <button class="btn-identificacao" onclick="fecharModal('modal-regras')">Entendi, vamos começar!</button>
+    <!-- Controle de volume (slider) com ícone de som -->
+    <div id="volume-control" class="volume-control">
+        <i class="fas fa-volume-up" id="sound-icon"></i> <!-- Ícone de som -->
+        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1">
     </div>
-</div>
+
+    <!-- Música de fundo -->
+    <audio id="background-music" loop autoplay>
+        <source src="assets/musica-background.mp3" type="audio/mp3">
+        Seu navegador não suporta áudio.
+    </audio>
+
+    <!-- Modal de Regras -->
+    <div id="modal-regras" class="modal">
+        <div class="modal-content regras-content">
+            <span class="close-modal" onclick="fecharModal('modal-regras')">&times;</span>
+            <h2 class="modal-title">🎅 Regras do Amigo Secreto Digital</h2>
+        
+            <div class="regras-container">
+                <div class="regra-item">
+                    <i class="fas fa-users icone-regra"></i>
+                    <h3>Como Jogar:</h3>
+                    <p>1. Adicione os nomes de todos os participantes<br>
+                    2. Clique em "Sortear" para gerar os pares secretos<br>
+                    3. Cada pessoa verá apenas quem sorteou</p>
+                </div>
+                <div class="regra-item destaque">
+                    <i class="fas fa-shield-alt icone-regra"></i>
+                    <h3>Sistema de Segurança:</h3>
+                    <p>• Senha de 4 dígitos obrigatória<br>
+                    • Só o dono do nome pode ver seu par<br>
+                    • Dados criptografados localmente</p>
+                </div>
+                <div class="regra-item">
+                    <i class="fas fa-sync-alt icone-regra"></i>
+                    <h3>Recarregar Página:</h3>
+                    <p>✓ Nomes são mantidos<br>
+                    ✓ Sorteio precisa ser refeito<br>
+                    ✓ Senhas são preservadas</p>
+                </div>
+                <div class="regra-item destaque">
+                    <i class="fas fa-exclamation-triangle icone-regra"></i>
+                    <h3>Importante:</h3>
+                    <p>• Não atualize após o sorteio!<br>
+                    • Novo sorteio apaga tudo<br>
+                    • Mantenha sua senha em segredo</p>
+                </div>
+            </div>
+            <button class="btn-identificacao" onclick="fecharModal('modal-regras')">Entendi, vamos começar!</button>
+        </div>
+    </div>
 
     <!-- Modal para Exibir os Resultados do Sorteio -->
     <div id="modal-sortear" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 class="modal-title">🎉 Resultados do Sorteio</h2>
-            <ul id="modal-resultados" class="modal-list"></ul>>
-    </div>
+            <ul id="modal-resultados" class="modal-list"></ul> 
+        </div>
     </div>
 
     <!-- Modal para Exibir a Lista de Participantes -->
@@ -125,33 +162,28 @@
         </div>
     </div>
 
-    <!-- Adicionar novos modais -->
+    <!-- Modal de Identificação -->
     <div id="modal-identificacao" class="modal">
-    <div class="modal-content identificacao-content">
-         <span class="close-modal" onclick="fecharModalCompleto()">&times;</span>
-
-         <!-- Título dinâmico -->
-         <h2 id="modal-titulo" class="modal-title"></h2>
-
-        <div id="etapa-nome">
-            <input type="text" id="input-identificacao" placeholder="Digite seu nome">
-            <button type="button" class="btn-identificacao" onclick="verificarNome()">Continuar</button>
-        </div>
-
-        <!-- Etapa da senha -->
-    <div id="etapa-senha" style="display: none;">
-        <input type="password" id="input-senha" placeholder="Digite sua senha de 4 dígitos" maxlength="4" inputmode="numeric">
-        <button type="button" class="btn-identificacao" onclick="verificarSenha()">Acessar</button>
-        <button type="button" class="btn-cancelar" onclick="voltarParaNome()">Voltar</button>
+        <div class="modal-content identificacao-content">
+            <span class="close-modal" onclick="fecharModalCompleto()">&times;</span>
+            <!-- Título dinâmico -->
+            <h2 id="modal-titulo" class="modal-title"></h2>
+            <div id="etapa-nome">
+                <input type="text" id="input-identificacao" placeholder="Digite seu nome">
+                <button type="button" class="btn-identificacao" onclick="verificarNome()">Continuar</button>
+            </div>
+            <!-- Etapa da senha -->
+            <div id="etapa-senha" style="display: none;">
+                <input type="password" id="input-senha" placeholder="Digite sua senha de 4 dígitos" maxlength="4" inputmode="numeric">
+                <button type="button" class="btn-identificacao" onclick="verificarSenha()">Acessar</button>
+                <button type="button" class="btn-cancelar" onclick="voltarParaNome()">Voltar</button>
             </div>
         </div>
     </div>
-</div>
 
     <footer class="footer">
         <p>Desenvolvido por <a href="https://github.com/devbernardes" target="_blank">@devbernardes</a></p>
     </footer>
-
     <script src="app.js" defer></script>
     <audio id="present-sound" src="assets/som-presente.mp3"></audio>
 </body>

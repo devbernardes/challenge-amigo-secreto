@@ -856,11 +856,14 @@ body.modal-aberto::before {
 
 /* Estilos do Modal de Regras */
 .regras-content {
-    max-width: 800px;
+    max-width: 900px; /* Aumenta a largura do modal para 1000px */
     padding: 30px;
     position: relative;
-    top: 100px;
-    left: 390px;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-height: 90vh; /* Garante que o modal não ultrapasse 90% da altura da tela */
+    overflow-y: auto; /* Permite rolar o conteúdo se necessário */
 }
 
 .regras-container {
@@ -905,4 +908,248 @@ body.modal-aberto::before {
 
 .regra-item li {
     margin-bottom: 8px;
+}
+
+/* Controle de volume */
+.volume-control {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaçamento entre o ícone e o slider */
+    z-index: 100;
+}
+
+/* Estilo do slider */
+#volume-slider {
+    width: 100px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Ícone do som */
+#sound-icon {
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* Efeito de hover no ícone */
+#sound-icon:hover {
+    transform: scale(1.2);
+}
+
+/* Estilo para o contêiner do campo de senha */
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo para o campo de senha */
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Estilo para o ícone de "olho" */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+/* Altera o ícone quando a senha está visível */
+.fa-eye-slash {
+    color: #4CAF50; /* Verde para indicar visibilidade */
+}
+
+/*criar sala*/
+#create-room-btn-container {
+    /* Centraliza o botão na tela */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Ajuste a margem superior conforme necessário */
+    position: relative; /* Permite mover o botão */
+    top: -180px;
+    left: 259px;
+}
+
+#create-room-btn {
+    padding: 5px 15px;
+    background-color: #4B69FD; /* Cor de fundo do botão */
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#create-room-btn:hover {
+    background-color: #3a55c9; /* Cor de fundo ao passar o mouse */
+}
+
+/* Modal para Criar Sala */
+#create-room-modal {
+    display: none; /* Inicialmente oculto */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centraliza o modal */
+    background-color: transparent;
+    padding: 30px;
+    border-radius: 10px; /* Deixe as bordas levemente arredondadas se preferir */
+    z-index: 1000; /* Garante que o modal fique sobre outros elementos */
+    width: 500px; /* Largura do modal */
+    height: 400px; /* Altura do modal para manter o quadrado */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+}
+
+#create-room-modal h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #000000;
+}
+
+#create-room-modal label {
+    margin-top: 10px;
+    position: relative;
+    top: -10px;
+    font-weight: lighter; /* Distância entre o título e o campo de senha */
+}
+
+
+#create-room-modal input {
+    width: 100%; /* O campo de entrada vai ocupar toda a largura disponível do modal */
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border: 2px solid #4B69FD;
+    border-radius: 0; /* Sem bordas arredondadas para o input */
+    background-color: #f9f9f9;
+}
+
+#create-room-modal button {
+    padding: 10px 20px;
+    background-color: #4B69FD; /* Cor de fundo do botão */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 0; /* Sem bordas arredondadas para o botão */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* O botão vai ocupar toda a largura disponível */
+}
+
+#create-room-modal button:hover {
+    background-color: #3a55c9; /* Cor de fundo ao passar o mouse */
+}
+
+/* Fechar modal */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 25px;
+    color: #ff4444;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.close-modal:hover {
+    color: #ff0000;
+}
+
+/* Mostrar o modal e o fundo */
+.modal.show {
+    display: block;
+}
+.modal-overlay.show {
+    display: block;
+}
+
+/* Estilo para o modal de senha */
+#join-room-modal {
+    display: none;
+    position: fixed;
+    z-index: 10001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#join-room-modal .modal-content {
+    background-color: white;
+    margin: 16% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#join-room-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 10000;
+}
+
+#join-room-modal button {
+    padding: 10px 20px;
+    background-color: #4B69FD;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#join-room-modal button:hover {
+    background-color: #3a55c7;
+}
+
+.custom-alert {
+    z-index: 10001 !important; /* Garante que fique acima do modal */
+    position: fixed !important;
 }
