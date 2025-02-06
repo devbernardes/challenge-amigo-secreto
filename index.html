@@ -12,6 +12,11 @@
     <title>Amigo Secreto</title>
 </head>
 <body>
+    <!-- Botão claro ou escuro -->
+    <button id="toggleTheme" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+    
     <main class="main-content">
         <header class="header-banner">
             <div class="title-animation-container">
@@ -96,43 +101,62 @@
 
     <!-- Modal de Regras -->
     <div id="modal-regras" class="modal">
-        <div class="modal-content regras-content">
-            <span class="close-modal" onclick="fecharModal('modal-regras')">&times;</span>
-            <h2 class="modal-title">🎅 Regras do Amigo Secreto Digital</h2>
-        
-            <div class="regras-container">
-                <div class="regra-item">
-                    <i class="fas fa-users icone-regra"></i>
-                    <h3>Como Jogar:</h3>
-                    <p>1. Adicione os nomes de todos os participantes<br>
-                    2. Clique em "Sortear" para gerar os pares secretos<br>
-                    3. Cada pessoa verá apenas quem sorteou</p>
-                </div>
-                <div class="regra-item destaque">
-                    <i class="fas fa-shield-alt icone-regra"></i>
-                    <h3>Sistema de Segurança:</h3>
-                    <p>• Senha de 4 dígitos obrigatória<br>
-                    • Só o dono do nome pode ver seu par<br>
-                    • Dados criptografados localmente</p>
-                </div>
-                <div class="regra-item">
-                    <i class="fas fa-sync-alt icone-regra"></i>
-                    <h3>Recarregar Página:</h3>
-                    <p>✓ Nomes são mantidos<br>
-                    ✓ Sorteio precisa ser refeito<br>
-                    ✓ Senhas são preservadas</p>
-                </div>
-                <div class="regra-item destaque">
-                    <i class="fas fa-exclamation-triangle icone-regra"></i>
-                    <h3>Importante:</h3>
-                    <p>• Não atualize após o sorteio!<br>
-                    • Novo sorteio apaga tudo<br>
-                    • Mantenha sua senha em segredo</p>
-                </div>
+    <div class="modal-content regras-content">
+        <span class="close-modal" onclick="fecharModal('modal-regras')">&times;</span>
+        <h2 class="modal-title">🎅 Regras do Amigo Secreto Digital</h2>
+    
+        <div class="regras-container">
+            <div class="regra-item">
+                <i class="fas fa-users icone-regra"></i>
+                <h3>Como Jogar:</h3>
+                <p>1. Adicione os nomes de todos os participantes<br>
+                2. Clique em "Sortear" para gerar os pares secretos<br>
+                3. Cada pessoa verá apenas quem sorteou</p>
             </div>
-            <button class="btn-identificacao" onclick="fecharModal('modal-regras')">Entendi, vamos começar!</button>
+
+            <div class="regra-item destaque">
+                <i class="fas fa-link icone-regra"></i>
+                <h3>Criar e Compartilhar Sala:</h3>
+                <p>• Clique em "Criar Sala" após adicionar os nomes<br>
+                • Defina uma senha para compartilhar com todos<br>
+                • Compartilhe o link gerado com os participantes</p>
+            </div>
+
+            <div class="regra-item">
+                <i class="fas fa-door-open icone-regra"></i>
+                <h3>Entrar na Sala:</h3>
+                <p>• Use o link recebido para acessar a sala<br>
+                • Digite a senha fornecida pelo organizador<br>
+                • Identifique-se e crie sua senha pessoal</p>
+            </div>
+
+            <div class="regra-item destaque">
+                <i class="fas fa-shield-alt icone-regra"></i>
+                <h3>Sistema de Segurança:</h3>
+                <p>• Senha de 4 dígitos obrigatória<br>
+                • Só o dono do nome pode ver seu par<br>
+                • Dados criptografados localmente</p>
+            </div>
+
+            <div class="regra-item">
+                <i class="fas fa-sync-alt icone-regra"></i>
+                <h3>Recarregar Página:</h3>
+                <p>✓ Nomes são mantidos<br>
+                ✓ Sorteio é preservado<br>
+                ✓ Senhas são mantidas</p>
+            </div>
+
+            <div class="regra-item destaque">
+                <i class="fas fa-exclamation-triangle icone-regra"></i>
+                <h3>Importante:</h3>
+                <p>• Não atualize após o sorteio!<br>
+                • Novo sorteio apaga tudo<br>
+                • Mantenha sua senha em segredo</p>
+            </div>
         </div>
+        <button class="btn-identificacao" onclick="fecharModal('modal-regras')">Entendi, vamos começar!</button>
     </div>
+</div>
 
     <!-- Modal para Exibir os Resultados do Sorteio -->
     <div id="modal-sortear" class="modal">

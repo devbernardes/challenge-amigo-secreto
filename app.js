@@ -105,7 +105,85 @@ function createRoom() {
     localStorage.setItem(roomId, JSON.stringify(roomData));
     const roomLink = `${window.location.href.split('?')[0]}?room=${roomId}`;
 
-    customAlert(`🎉 Sala criada com sucesso! Compartilhe este link:\n\n${roomLink}\n\nCopie e envie para os participantes!`);
+    // Novo alerta customizado com dois botões
+    return new Promise(resolve => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px 20px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 100000;
+            text-align: center;
+            min-width: 300px;
+        `;
+
+        const closeButton = document.createElement('span');
+        closeButton.innerHTML = '×';
+        closeButton.style.cssText = `
+            position: absolute;
+            right: 15px;
+            top: -10px;
+            font-size: 40px;
+            cursor: pointer;
+            color: rgb(255, 0, 0);
+            transition: all 0.3s;
+        `;
+        closeButton.onclick = () => {
+            document.body.removeChild(modal);
+            resolve();
+        };
+
+        const text = document.createElement('p');
+        text.innerHTML = `🎉 Sala criada com sucesso! Compartilhe este link:<br><br>${roomLink}<br><br>Copie e envie para os participantes!`;
+        text.style.marginBottom = '20px';
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'center';
+        buttonContainer.style.gap = '10px';
+
+        const okButton = document.createElement('button');
+        okButton.textContent = 'OK';
+        okButton.style.cssText = `
+            padding: 10px 25px;
+            background: #4B69FD;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        `;
+        okButton.onmouseover = () => okButton.style.transform = 'scale(1.05)';
+        okButton.onmouseout = () => okButton.style.transform = 'scale(1)';
+        okButton.onclick = () => {
+            document.body.removeChild(modal);
+            resolve();
+        };
+
+        const irParaSalaButton = document.createElement('button');
+        irParaSalaButton.textContent = 'Ir para Sala';
+        irParaSalaButton.style.cssText = okButton.style.cssText;
+        irParaSalaButton.onmouseover = () => irParaSalaButton.style.transform = 'scale(1.05)';
+        irParaSalaButton.onmouseout = () => irParaSalaButton.style.transform = 'scale(1)';
+        irParaSalaButton.onclick = () => {
+            window.location.href = roomLink;
+        };
+
+        buttonContainer.appendChild(okButton);
+        buttonContainer.appendChild(irParaSalaButton);
+
+        modal.appendChild(closeButton);
+        modal.appendChild(text);
+        modal.appendChild(buttonContainer);
+
+        document.body.appendChild(modal);
+    });
+
     fecharModal('create-room-modal');
 }
 
@@ -426,7 +504,6 @@ document.getElementById('mostrarLista').addEventListener('click', (e) => {
 });
 
 // Função de Sorteio
-// Função de Sorteio
 function sortearAmigos() {
     // BLOQUEIA SORTEIO EM SALAS COMPARTILHADAS
     if (isSalaCompartilhada) {
@@ -456,6 +533,7 @@ function sortearAmigos() {
     localStorage.setItem('senhasAmigos', JSON.stringify(senhasArmazenadas));
 
     customAlert("🎉 Sorteio realizado com sucesso!");
+    document.getElementById('resetarSorteio').classList.remove('hidden'); // Mostra o botão após o sorteio
     atualizarBotaoSorteio();
 }
 
@@ -481,11 +559,13 @@ function atualizarBotaoSorteio() {
 async function resetarSorteio() {
     const confirmado = await customConfirm("⚠️ Tem certeza que deseja realizar um novo sorteio?");
     if (confirmado) {
-        // Limpar os dados do sorteio
-        localStorage.removeItem('senhasAmigos');
-        localStorage.removeItem('listaDeAmigos');
+
+        // Remove todos os dados do sorteio
         localStorage.removeItem('sorteioRealizado');
         localStorage.removeItem('sorteioAtual');
+        localStorage.removeItem('senhasAmigos');
+        localStorage.removeItem('jaViuRegras'); // Remove o flag de regras vistas
+
         senhasArmazenadas = {};
         listaDeAmigos = [];
         sorteados = [];
@@ -494,6 +574,11 @@ async function resetarSorteio() {
 
         // Atualizar o estado do botão
         atualizarBotaoSorteio();
+
+        // Mostra o modal de regras novamente
+        setTimeout(() => {
+            abrirModal('modal-regras');
+        }, 500);
 
         // Ocultar o botão de resetar sorteio
         document.getElementById('resetarSorteio').classList.add('hidden');
@@ -891,7 +976,24 @@ document.getElementById('resetarSorteio').addEventListener('click', async (e) =>
     await resetarSorteio();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
+
+    const novaSessao = await verificarSessaoIP();
+    if (novaSessao) {
+        // Limpa dados anteriores
+        localStorage.removeItem('sorteioRealizado');
+        localStorage.removeItem('sorteioAtual');
+        localStorage.removeItem('listaDeAmigos');
+        localStorage.removeItem('senhasAmigos');
+        localStorage.removeItem('jaViuRegras');
+
+        listaDeAmigos = [];
+        sorteados = [];
+        sorteioRealizado = false;
+        senhasArmazenadas = {};
+    }
+
     // Carrega a lista salva
     carregarListaDoLocalStorage();
 
@@ -920,6 +1022,17 @@ document.addEventListener('DOMContentLoaded', () => {
         botaoSortear.classList.add('efeto-pulsar');
         document.getElementById('resetarSorteio').classList.add('hidden');
 
+        // Desativa o botão de resetar sorteio APENAS em salas compartilhadas
+        const resetarButton = document.getElementById('resetarSorteio');
+        resetarButton.classList.remove('hidden'); // Remove a classe hidden
+        resetarButton.classList.add('disabled');
+        resetarButton.style.cursor = 'not-allowed';
+        resetarButton.style.opacity = '0.5';
+        resetarButton.onclick = (e) => {
+            e.preventDefault();
+            customAlert("⚠️ Não é possível resetar o sorteio em uma sala compartilhada!");
+        };
+
         // Listener para verificação de senha
         document.getElementById('submit-room-password').addEventListener('click', () => {
             const password = document.getElementById('room-password-input').value;
@@ -939,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (roomData.password !== password) {
                 customAlert("❌ Senha incorreta! Tente novamente.");
-                document.getElementById('room-password-input').value = ''; // Limpa o campo de senha
+                document.getElementById('room-password-input').value = '';
                 return;
             }
 
@@ -949,17 +1062,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
             salvarListaNoLocalStorage();
             fecharModal('join-room-modal');
+
+            // Verifica se é a primeira vez que o usuário acessa uma sala
+            const salaKey = `jaViuRegras-sala-${roomIdFromUrl}`;
+            const primeiroAcessoSala = !localStorage.getItem(salaKey);
+
+            if (primeiroAcessoSala) {
+                // Marca que o usuário já viu as regras desta sala
+                localStorage.setItem(salaKey, 'true');
+
+                // Mostra o modal de regras
+                setTimeout(() => {
+                    abrirModal('modal-regras');
+                }, 500); // Pequeno delay para garantir que o modal anterior fechou
+            }
         });
-    } 
+    } else {
+        // Se não for sala compartilhada, verifica se é primeiro acesso geral
+        const primeiroAcessoGeral = !localStorage.getItem('jaViuRegras');
+        if (primeiroAcessoGeral) {
+            setTimeout(() => {
+                abrirModal('modal-regras');
+                localStorage.setItem('jaViuRegras', 'true');
+            }, 1000);
+        }
+    }
 
     // Atualiza o estado do botão baseado no localStorage
     atualizarBotaoSorteio();
 
-        // Mostra modal de regras após 1 segundo apenas se não houver sorteio realizado
-        if (!localStorage.getItem('sorteioRealizado') && !isSalaCompartilhada) {
-            setTimeout(() => abrirModal('modal-regras'), 1000);
-        }
-    });
+    // Mostra modal de regras após 1 segundo apenas se não houver sorteio realizado
+    if (!localStorage.getItem('sorteioRealizado') && !isSalaCompartilhada) {
+        setTimeout(() => abrirModal('modal-regras'), 1000);
+    }
+});
+
+// Nova função para atualizar o estado do botão
+function atualizarBotaoSorteio() {
+    const botaoSortear = document.getElementById('botaoSortear');
+    const textoBotao = document.querySelector('.button-text');
+    const resetarButton = document.getElementById('resetarSorteio');
+
+    if (localStorage.getItem('sorteioRealizado') === 'true' || isSalaCompartilhada) {
+        textoBotao.textContent = 'Ver resultado do sorteio';
+        botaoSortear.onclick = () => abrirModal('modal-identificacao');
+        botaoSortear.classList.add('efeto-pulsar');
+        resetarButton.classList.remove('hidden'); // Mostra o botão
+    } else {
+        textoBotao.textContent = 'Sortear amigo';
+        botaoSortear.onclick = sortearAmigos;
+        botaoSortear.classList.remove('efeto-pulsar');
+        resetarButton.classList.add('hidden'); // Esconde o botão quando não há sorteio
+    }
+}
+
 
 function salvarListaNoLocalStorage() {
     localStorage.setItem('listaDeAmigos', JSON.stringify(listaDeAmigos));
@@ -973,3 +1129,114 @@ function carregarListaDoLocalStorage() {
         atualizarListaModal();
     }  
 }
+
+// Funções de rastreamento IP
+async function getClientIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        console.error('Erro ao obter IP:', error);
+        return null;
+    }
+}
+
+async function verificarSessaoIP() {
+    const ip = await getClientIP();
+    if (!ip) return false;
+
+    const sessaoKey = `amigo-secreto-sessao-${ip}`;
+    const sessaoAtual = localStorage.getItem(sessaoKey);
+
+    if (!sessaoAtual) {
+        // Primeira vez deste IP
+        const novaSessao = {
+            ip: ip,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(sessaoKey, JSON.stringify(novaSessao));
+        return true; // É uma nova sessão
+    }
+
+    // Verifica se a sessão expirou (24 horas)
+    const sessao = JSON.parse(sessaoAtual);
+    const tempoDecorrido = Date.now() - sessao.timestamp;
+    const TEMPO_EXPIRACAO = 24 * 60 * 60 * 1000; // 24 horas
+
+    if (tempoDecorrido > TEMPO_EXPIRACAO) {
+        // Sessão expirada, criar nova
+        const novaSessao = {
+            ip: ip,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(sessaoKey, JSON.stringify(novaSessao));
+        return true; // É uma nova sessão
+    }
+
+    return false; // Não é uma nova sessão
+}
+
+// Função de tema (coloque no final do arquivo)
+function initTheme() {
+    console.log('Função initTheme chamada'); // Debug
+    const toggleTheme = document.getElementById('toggleTheme');
+
+    if (!toggleTheme) {
+        console.log('Botão de tema não encontrado!'); // Debug
+        return;
+    }
+
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcon(theme);
+
+    toggleTheme.addEventListener('click', () => {
+        console.log('Botão de tema clicado'); // Debug
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
+}
+
+function updateThemeIcon(theme) {
+    console.log('Atualizando ícone para:', theme); // Debug
+    const icon = document.querySelector('#toggleTheme i');
+    if (!icon) {
+        console.log('Ícone não encontrado!'); // Debug
+        return;
+    }
+
+    if (theme === 'dark') {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+    } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+    }
+}
+
+// Função para atualizar a imagem do subtítulo
+function atualizarImagemSubtitulo() {
+    const imagem = document.querySelector('.subtitle img');
+    const temaEscuro = document.body.getAttribute('data-theme') === 'dark';
+
+    if (temaEscuro) {
+        imagem.style.filter = 'none';
+        imagem.style.mixBlendMode = 'normal';
+    } else {
+        imagem.style.filter = 'brightness(0.8) contrast(1.2)';
+        imagem.style.mixBlendMode = 'multiply';
+    }
+}
+
+// Executar ao alternar o tema
+document.querySelector('.theme-toggle').addEventListener('click', function () {
+    setTimeout(atualizarImagemSubtitulo, 50); // Pequeno delay para garantir que o tema foi alterado
+});
+
+// Executar ao carregar a página
+window.addEventListener('load', atualizarImagemSubtitulo);
