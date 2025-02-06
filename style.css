@@ -1370,3 +1370,30 @@ body.modal-aberto::before {
 .theme-toggle i {
     color: inherit; /* ou a cor específica que você quer no tema claro */
 }
+
+.play-music-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 2px;
+    padding: 10px 20px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.play-music-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Ajuste para o tema escuro */
+[data-theme="dark"] .play-music-btn {
+    background: var(--color-primary);
+    color: white;
+}

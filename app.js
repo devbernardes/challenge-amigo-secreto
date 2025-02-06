@@ -4,7 +4,7 @@ let usuarioAtual = '';
 let sorteioRealizado = false;
 let senhaTemporaria = '';
 let senhasArmazenadas = JSON.parse(localStorage.getItem('senhasAmigos')) || {};
-let isSalaCompartilhada = false; 
+let isSalaCompartilhada = false;
 
 // Variáveis para controle de volume
 const volumeSlider = document.getElementById('volume-slider');
@@ -649,9 +649,9 @@ function customConfirm(message) {
         btnContainer.appendChild(simBtn);
         btnContainer.appendChild(naoBtn);
 
-        modal.appendChild(btnContainer); 
+        modal.appendChild(btnContainer);
 
-        document.body.appendChild(modal);  
+        document.body.appendChild(modal);
     });
 }
 
@@ -888,7 +888,7 @@ function verificarNome() {
     }
 
     // Verifica na lista de participantes
-    const nomeExiste = listaDeAmigos.some(nome => 
+    const nomeExiste = listaDeAmigos.some(nome =>
         nome.toLowerCase() === nomeDigitado.toLowerCase()
     );
 
@@ -1127,7 +1127,7 @@ function carregarListaDoLocalStorage() {
         listaDeAmigos = JSON.parse(listaSalva);
         // Atualiza a interface se necessário
         atualizarListaModal();
-    }  
+    }
 }
 
 // Funções de rastreamento IP
@@ -1240,3 +1240,24 @@ document.querySelector('.theme-toggle').addEventListener('click', function () {
 
 // Executar ao carregar a página
 window.addEventListener('load', atualizarImagemSubtitulo);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const audio = document.querySelector('audio');
+
+    // Cria um botão para iniciar o áudio
+    const playButton = document.createElement('button');
+    playButton.innerHTML = '🎵 Tocar Música';
+    playButton.classList.add('play-music-btn');
+    document.body.appendChild(playButton);
+
+    // Adiciona evento de clique
+    playButton.addEventListener('click', function () {
+        if (audio.paused) {
+            audio.play();
+            playButton.innerHTML = '🎵 Parar Música';
+        } else {
+            audio.pause();
+            playButton.innerHTML = '🎵 Tocar Música';
+        }
+    });
+});
