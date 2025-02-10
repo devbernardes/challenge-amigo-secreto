@@ -15,7 +15,7 @@ Um sistema interativo para sorteio de Amigo Secreto com recursos modernos e inte
 - 🌓 **Modo Noturno**: Alternância entre temas claro e escuro
 - 🛡️ **Proteção de Dados**: Senha pessoal de 4 dígitos para cada participante
 - ❄️ **Efeitos Visuais**: Animação de neve e elementos festivos
-- 📱 **Responsivo**: Funciona bem em dispositivos móveis e desktop
+- 📱 **Responsivo**: Funcional apenas para web desktop
 
 ## 🚀 Como Usar
 
